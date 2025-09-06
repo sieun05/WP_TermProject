@@ -5,14 +5,20 @@
 bool CanCombine(Inventory item1, Inventory item2) {
     if ((item1.itemID == 73 && item2.itemID == 73) ||
         (item1.itemID == 71 && item2.itemID == 72) ||
+        (item1.itemID == 72 && item2.itemID == 71) ||
         (item1.itemID == 73 && item2.itemID == 72) ||
+        (item1.itemID == 72 && item2.itemID == 73) ||
         (item1.itemID == 72 && item2.itemID == 72) ||
         (item1.itemID == 71 && item2.itemID == 71) ||
         (item1.itemID == 71 && item2.itemID == 74) ||
+        (item1.itemID == 74 && item2.itemID == 71) ||
         (item1.itemID == 71 && item2.itemID == 73) ||
+        (item1.itemID == 73 && item2.itemID == 71) ||
         (item1.itemID == 74 && item2.itemID == 74) ||
         (item1.itemID == 74 && item2.itemID == 73) ||
-        (item1.itemID == 74 && item2.itemID == 72)) {
+        (item1.itemID == 73 && item2.itemID == 74) ||
+        (item1.itemID == 74 && item2.itemID == 72) ||
+        (item1.itemID == 72 && item2.itemID == 74)) {
         return true;
     }
     return false;
@@ -23,7 +29,8 @@ Inventory CombineItems(Inventory item1, Inventory item2) {
     if (item1.itemID == 73 && item2.itemID == 73) {
         result.itemID = 83;
     }
-    else if ((item1.itemID == 71 && item2.itemID == 72) || (item1.itemID == 73 && item2.itemID == 72)) {
+    else if ((item1.itemID == 71 && item2.itemID == 72) || (item1.itemID == 73 && item2.itemID == 72) or
+        (item1.itemID == 72 && item2.itemID == 71) || (item1.itemID == 72 && item2.itemID == 73)) {
         result.itemID = 83;
     }
     else if (item1.itemID == 72 && item2.itemID == 72) {
@@ -32,19 +39,23 @@ Inventory CombineItems(Inventory item1, Inventory item2) {
     else if (item1.itemID == 71 && item2.itemID == 71) {
         result.itemID = 81;
     }
-    else if (item1.itemID == 71 && item2.itemID == 74) {
+    else if ((item1.itemID == 71 && item2.itemID == 74) or 
+        (item1.itemID == 74 && item2.itemID == 71)) {
         result.itemID = 81;
     }
-    else if (item1.itemID == 71 && item2.itemID == 73) {
+    else if ((item1.itemID == 71 && item2.itemID == 73) or 
+        (item1.itemID == 73 && item2.itemID == 71)) {
         result.itemID = 81;
     }
     else if (item1.itemID == 74 && item2.itemID == 74) {
         result.itemID = 84;
     }
-    else if (item1.itemID == 74 && item2.itemID == 73) {
+    else if ((item1.itemID == 74 && item2.itemID == 73) or 
+        (item1.itemID == 73 && item2.itemID == 74)) {
         result.itemID = 84;
     }
-    else if (item1.itemID == 74 && item2.itemID == 72) {
+    else if ((item1.itemID == 74 && item2.itemID == 72) or 
+        (item1.itemID == 72 && item2.itemID == 74)) {
         result.itemID = 84;
     }
 
