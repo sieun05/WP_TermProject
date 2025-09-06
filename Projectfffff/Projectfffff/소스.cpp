@@ -239,23 +239,31 @@ static RECT secondSlot;
 static RECT thirdSlot;
 //25.06.10 - 김정현
 //요리 아이템 함수
-void DrawCookItems(HDC mdc, HDC itemDC) {
+void DrawCookItems(HDC mdc, HDC itemDC, HDC memdc) {
 	// 첫 번째 칸 그리기
 	if (cookitem[0].itemID != 0) {
 		int sx, sy;
 		GetItemTileCoords(cookitem[0].itemID, sx, sy);
+		int sxNum, syNum;
+		GetNumberTileCoords(cookitem[0].itemcnt, sxNum, syNum);
+
 		int drawX = firstSlot.left;
 		int drawY = firstSlot.top;
 		TransparentBlt(mdc, drawX, drawY, ITEM_SIZE, ITEM_SIZE, itemDC, sx, sy, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
+		TransparentBlt(mdc, drawX, drawY, ITEM_SIZE, ITEM_SIZE, memdc, sxNum, syNum, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
 	}
 
 	// 두 번째 칸 그리기
 	if (cookitem[1].itemID != 0) {
 		int sx, sy;
 		GetItemTileCoords(cookitem[1].itemID, sx, sy);
+		int sxNum, syNum;
+		GetNumberTileCoords(cookitem[1].itemcnt, sxNum, syNum);
+
 		int drawX = secondSlot.left;
 		int drawY = secondSlot.top;
 		TransparentBlt(mdc, drawX, drawY, ITEM_SIZE, ITEM_SIZE, itemDC, sx, sy, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
+		TransparentBlt(mdc, drawX, drawY, ITEM_SIZE, ITEM_SIZE, memdc, sxNum, syNum, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
 	}
 
 	// 세 번째 칸 그리기 (결과물 칸)
@@ -342,15 +350,15 @@ Cell game_map[MAP_WIDTH][MAP_HEIGHT]{
 7, 7, 7, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 5, 5, 5, 1, 1, 1, 2, 0, 0, 0, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7,
 7, 7, 7, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1, 1, 7, 7, 7,
 7, 7, 7, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1, 7, 7, 7,
-7, 7, 7, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 8, 8, 8, 5, 5, 5, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1, 7, 7, 7,
-7, 7, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6, 6, 5, 5, 5, 5, 8, 5, 5, 5, 5, 8, 6, 8, 5, 5, 5, 5, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 7, 7, 7, 7,
-7, 7, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6, 8, 5, 5, 5, 5, 5, 8, 8, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7, 0, 7, 0, 0, 7, 7, 0, 0, 0, 7, 7, 7, 7, 1, 1, 1, 1, 1, 7, 7, 7, 7,
-7, 7, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6, 6, 5, 5, 5, 5, 5, 5, 8, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 7, 7, 7, 7, 1, 3, 3, 1, 7, 7, 7, 7, 7,
-7, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6, 6, 6, 6, 8, 8, 8, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 1, 1, 1, 1, 1, 7, 7, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 1, 3, 3, 7, 7, 7, 7, 7, 7,
-7, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 6, 6, 6, 6, 6, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 3, 3, 3, 1, 1, 1, 1, 7, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 7, 1, 1, 1, 7, 7, 7, 7, 7, 7,
-7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 6, 6, 6, 6, 6, 6, 5, 5, 5, 5, 8, 8, 8, 8, 8, 8, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 8, 7, 7, 1, 3, 1, 1, 1, 1, 7, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 1, 1, 1, 1, 7, 7, 7, 7, 7, 7,
-7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6, 6, 6, 6, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 8, 5, 5, 5, 5, 5, 5, 5, 5, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 8, 7, 7, 1, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7,
-7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6, 6, 5, 5, 1, 1, 5, 5, 5, 5, 8, 5, 5, 5, 5, 5, 5, 5, 5, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7, 0, 7, 0, 0, 0, 7, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 7, 7, 7, 7, 7,
+7, 7, 7, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 8, 8, 8, 5, 5, 5, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1, 7, 7, 7,
+7, 7, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 5, 5, 5, 5, 5, 8, 5, 5, 5, 5, 8, 6, 8, 5, 5, 5, 5, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 7, 7, 7, 7,
+7, 7, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 8, 5, 5, 5, 5, 5, 8, 8, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7, 0, 7, 0, 0, 7, 7, 0, 0, 0, 7, 7, 7, 7, 1, 1, 1, 1, 1, 7, 7, 7, 7,
+7, 7, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 6, 5, 5, 5, 5, 5, 5, 8, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 7, 7, 7, 7, 1, 3, 3, 1, 7, 7, 7, 7, 7,
+7, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 5, 5, 5, 8, 8, 8, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 1, 1, 1, 1, 1, 7, 7, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 1, 3, 3, 7, 7, 7, 7, 7, 7,
+7, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 3, 3, 3, 1, 1, 1, 1, 7, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 7, 1, 1, 1, 7, 7, 7, 7, 7, 7,
+7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 8, 8, 8, 8, 8, 8, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 8, 7, 7, 1, 3, 1, 1, 1, 1, 7, 7, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 1, 1, 1, 1, 7, 7, 7, 7, 7, 7,
+7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 8, 5, 5, 5, 5, 5, 5, 5, 5, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 8, 7, 7, 1, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7,
+7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 5, 5, 5, 1, 1, 5, 5, 5, 5, 8, 5, 5, 5, 5, 5, 5, 5, 5, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7, 0, 7, 0, 0, 0, 7, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 7, 7, 7, 7, 7,
 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 5, 5, 5, 5, 5, 5, 7, 7, 5, 5, 5, 5, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7, 7, 7, 0, 0, 7, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7, 7,
 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 5, 5, 5, 7, 7, 5, 5, 7, 7, 5, 5, 5, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7, 7,
 7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 5, 7, 7, 7, 7, 5, 5, 5, 5, 5, 5, 5, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7,
@@ -717,6 +725,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
 				boss_flag = false;
 				boss_delay = 0;
+				boss.animFrame = 0;
+				boss.maxFrame = 4;
+				boss.lastAnimUpdate = GetTickCount64();
+				boss.hp = 1000;
+				boss.prepareStartTime = 0;;
 				reblend = false;
 				dead_cnt++;
 			}
@@ -828,24 +841,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 				//2506104
 				game_end_flag = false;
 
-				/*inventory[0][0].itemID = 2;
+				inventory[0][0].itemID = 2;
 				inventory[0][0].itemcnt = 1;
 				inventory[0][1].itemID = 14;
 				inventory[0][1].itemcnt = 1;
 				inventory[0][2].itemID = 1;
 				inventory[0][2].itemcnt = 1;
-				
+				inventory[0][3].itemID = 3;
+				inventory[0][3].itemcnt = 1;
 				inventory[0][4].itemID = 4;
 				inventory[0][4].itemcnt = 1;
 				inventory[0][5].itemID = 13;
 				inventory[0][5].itemcnt = 10;
 				inventory[0][6].itemID = 91;
 				inventory[0][6].itemcnt = 1;
-
-				inventory[0][3].itemID = 3;
-				inventory[0][3].itemcnt = 1;
-				inventory[0][4].itemID = 13;
-				inventory[0][4].itemcnt = 10;*/
+				inventory[0][7].itemID = 64;
+				inventory[0][7].itemcnt = 10;
+				inventory[0][8].itemID = 63;
+				inventory[0][8].itemcnt = 10;
 
 				screen = 1;		
 			}
@@ -917,7 +930,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 				//허기 60 이상일 때 mp 회복
 				if (p.hunger > 60) {
 					hungerMp_cnt++;
-					if (hungerMp_cnt > 50) {
+					if (hungerMp_cnt > 40) {
 						hungerMp_cnt = 0;
 						p.mp++;
 						if (p.mp > 100)
@@ -927,9 +940,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
 				//(25.06.08) - 오시은
 				//배고픔 일정량 이상일 때, 체력 회복
-				if (p.hunger > 80) {
+				if (p.hunger > 70) {
 					hp_recover_delay++;
-					if (hp_recover_delay > 50) {
+					if (hp_recover_delay > 40) {
 						hp_recover_delay = 0;
 						p.hp++;
 						if (p.hp > 100) p.hp = 100;
@@ -2003,7 +2016,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			break;
 		case 'q':
 		case 'Q':
-			if (screen == 1 and game_end_flag) {
+			if ((screen == 1 and game_end_flag) or screen == 0) {
 				CleanupInvBitmaps();
 				CleanupItemBitmaps();
 				CleanupPlayerSprite();
@@ -2478,18 +2491,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			if (show_cook) {
 				HDC itemDC = CreateCompatibleDC(mdc);
 				SelectObject(itemDC, Itembmp);
-				DrawCookItems(mdc, itemDC);
+				SelectObject(memdc, Numbmp);
+				DrawCookItems(mdc, itemDC, memdc);
 				DeleteDC(itemDC);
 			}
 			//(25.06.04) - 김정현
 			//인벤 속 아이템 수정,아이템 드래그
 
-			hdcScreen = GetDC(NULL);
-			hdcMemItem = CreateCompatibleDC(hdcScreen);
+			hdcMemItem = CreateCompatibleDC(hdc);
 			SelectObject(hdcMemItem, Itembmp);
-
-			hdcMemNumber = CreateCompatibleDC(hdcScreen);
-			SelectObject(hdcMemNumber, Numbmp);
 
 			if (show_inventory || show_craft || show_cook) {
 				for (int row = 0; row < 3; ++row) {
@@ -2522,7 +2532,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 							int sxNum, syNum;
 							GetNumberTileCoords(cnt, sxNum, syNum);
 
-							TransparentBlt(mdc, drawX + 5, drawY + 5, ITEM_SIZE - 5, ITEM_SIZE - 5, hdcMemNumber, sxNum, syNum, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
+							SelectObject(memdc, Numbmp);
+							TransparentBlt(mdc, drawX + 5, drawY + 5, ITEM_SIZE - 5, ITEM_SIZE - 5, memdc, sxNum, syNum, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
 						}
 					}
 				}
@@ -2559,7 +2570,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 						int sx, sy;
 						GetNumberTileCoords(cnt, sx, sy);
 
-						TransparentBlt(mdc, drawX + 5, drawY + 5, ITEM_SIZE, ITEM_SIZE, hdcMemNumber, sx, sy, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
+						SelectObject(memdc, Numbmp);
+						TransparentBlt(mdc, drawX + 5, drawY + 5, ITEM_SIZE, ITEM_SIZE, memdc, sx, sy, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
 					}
 				}
 			}
@@ -2649,9 +2661,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			}
 
 
-			DeleteDC(hdcMemNumber);
 			DeleteDC(hdcMemItem);
-			ReleaseDC(NULL, hdcScreen);
 
 			//숫자가 아이템 위로 오도록
 			if (show_inventory || show_cook || show_craft) {
