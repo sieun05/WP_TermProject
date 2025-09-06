@@ -188,7 +188,9 @@ inline void CraftAndInteraction(Player p, int bx, int by, Inventory& inventory, 
         return;
 
     int heldItemID = inventory.itemID;
-    if (game_map[targetY][targetX].type == 0) {
+    if (game_map[targetY][targetX].type == 0
+        or game_map[targetY][targetX].type == 5
+        or game_map[targetY][targetX].type == 6) {
 
         switch (heldItemID) {
         case 91:

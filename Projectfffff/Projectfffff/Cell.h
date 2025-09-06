@@ -78,11 +78,12 @@ void DrawWallTile(HDC& hdc, HDC* memdc, HDC& memdc2, int screenX, int screenY, i
 		if (mapY + 1 < MAP_HEIGHT &&
 			(game_map[mapY + 1][mapX].type == 9 or game_map[mapY + 1][mapX].type == 10)) {
 			srcX = 1, srcY = 4;
-			TransparentBlt(hdc, screenX, screenY, CELL_SIZE, CELL_SIZE, *memdc, 40 * srcX, 40 * srcY, 40, 40, RGB(0, 0, 255));
+			TransparentBlt(hdc, screenX, screenY, CELL_SIZE, CELL_SIZE, memdc2, 40 * srcX, 40 * srcY, 40, 40, RGB(0, 0, 255));
 		}
-		else if (game_map[mapY + 1][mapX].type == 11) {
+		else if (mapY + 1 < MAP_HEIGHT && 
+			game_map[mapY + 1][mapX].type == 11) {
 			srcX = 0, srcY = 4;
-			TransparentBlt(hdc, screenX, screenY, CELL_SIZE, CELL_SIZE, *memdc, 40 * srcX, 40 * srcY, 40, 40, RGB(0, 0, 255));
+			TransparentBlt(hdc, screenX, screenY, CELL_SIZE, CELL_SIZE, memdc2, 40 * srcX, 40 * srcY, 40, 40, RGB(0, 0, 255));
 		}
 	}
 	else {
@@ -223,6 +224,15 @@ void DrawGroundTile(HDC& hdc, HDC& memdc, int screenX, int screenY, int mapX, in
 			}
 			if (mapX - 1 > 0 and game_map[mapY][mapX - 1].type == 8) {
 				srcX = 0, srcY = 5;
+				TransparentBlt(hdc, screenX, screenY, CELL_SIZE, CELL_SIZE, memdc, 40 * srcX, 40 * srcY, 40, 40, RGB(0, 0, 255));
+			}
+
+			if (mapY + 1 > 0 and (game_map[mapY+1][mapX].type == 9 or game_map[mapY + 1][mapX].type == 10)) {
+				srcX = 1, srcY = 6;
+				TransparentBlt(hdc, screenX, screenY, CELL_SIZE, CELL_SIZE, memdc, 40 * srcX, 40 * srcY, 40, 40, RGB(0, 0, 255));
+			}
+			if (mapY + 1 > 0 and game_map[mapY + 1][mapX].type == 11) {
+				srcX = 0, srcY = 6;
 				TransparentBlt(hdc, screenX, screenY, CELL_SIZE, CELL_SIZE, memdc, 40 * srcX, 40 * srcY, 40, 40, RGB(0, 0, 255));
 			}
 		}
