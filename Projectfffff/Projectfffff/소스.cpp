@@ -1,6 +1,9 @@
 #pragma comment(lib, "Msimg32.lib")
 #include "Çì´õ.h"
 
+
+//20250906
+
 using namespace std;
 
 #define marginX 16
@@ -831,14 +834,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 				inventory[0][1].itemcnt = 1;
 				inventory[0][2].itemID = 1;
 				inventory[0][2].itemcnt = 1;
-				inventory[0][3].itemID = 3;
-				inventory[0][3].itemcnt = 1;
+				
 				inventory[0][4].itemID = 4;
 				inventory[0][4].itemcnt = 1;
 				inventory[0][5].itemID = 13;
 				inventory[0][5].itemcnt = 10;
 				inventory[0][6].itemID = 91;
-				inventory[0][6].itemcnt = 1;*/
+				inventory[0][6].itemcnt = 1;
+
+				inventory[0][3].itemID = 3;
+				inventory[0][3].itemcnt = 1;
+				inventory[0][4].itemID = 13;
+				inventory[0][4].itemcnt = 10;*/
 
 				screen = 1;		
 			}
