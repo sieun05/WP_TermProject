@@ -239,23 +239,31 @@ static RECT secondSlot;
 static RECT thirdSlot;
 //25.06.10 - 김정현
 //요리 아이템 함수
-void DrawCookItems(HDC mdc, HDC itemDC) {
+void DrawCookItems(HDC mdc, HDC itemDC, HDC memdc) {
 	// 첫 번째 칸 그리기
 	if (cookitem[0].itemID != 0) {
 		int sx, sy;
 		GetItemTileCoords(cookitem[0].itemID, sx, sy);
+		int sxNum, syNum;
+		GetNumberTileCoords(cookitem[0].itemcnt, sxNum, syNum);
+
 		int drawX = firstSlot.left;
 		int drawY = firstSlot.top;
 		TransparentBlt(mdc, drawX, drawY, ITEM_SIZE, ITEM_SIZE, itemDC, sx, sy, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
+		TransparentBlt(mdc, drawX, drawY, ITEM_SIZE, ITEM_SIZE, memdc, sxNum, syNum, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
 	}
 
 	// 두 번째 칸 그리기
 	if (cookitem[1].itemID != 0) {
 		int sx, sy;
 		GetItemTileCoords(cookitem[1].itemID, sx, sy);
+		int sxNum, syNum;
+		GetNumberTileCoords(cookitem[1].itemcnt, sxNum, syNum);
+
 		int drawX = secondSlot.left;
 		int drawY = secondSlot.top;
 		TransparentBlt(mdc, drawX, drawY, ITEM_SIZE, ITEM_SIZE, itemDC, sx, sy, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
+		TransparentBlt(mdc, drawX, drawY, ITEM_SIZE, ITEM_SIZE, memdc, sxNum, syNum, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
 	}
 
 	// 세 번째 칸 그리기 (결과물 칸)
@@ -2481,18 +2489,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			if (show_cook) {
 				HDC itemDC = CreateCompatibleDC(mdc);
 				SelectObject(itemDC, Itembmp);
-				DrawCookItems(mdc, itemDC);
+				SelectObject(memdc, Numbmp);
+				DrawCookItems(mdc, itemDC, memdc);
 				DeleteDC(itemDC);
 			}
 			//(25.06.04) - 김정현
 			//인벤 속 아이템 수정,아이템 드래그
 
-			hdcScreen = GetDC(NULL);
-			hdcMemItem = CreateCompatibleDC(hdcScreen);
+			hdcMemItem = CreateCompatibleDC(hdc);
 			SelectObject(hdcMemItem, Itembmp);
-
-			hdcMemNumber = CreateCompatibleDC(hdcScreen);
-			SelectObject(hdcMemNumber, Numbmp);
 
 			if (show_inventory || show_craft || show_cook) {
 				for (int row = 0; row < 3; ++row) {
@@ -2525,7 +2530,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 							int sxNum, syNum;
 							GetNumberTileCoords(cnt, sxNum, syNum);
 
-							TransparentBlt(mdc, drawX + 5, drawY + 5, ITEM_SIZE - 5, ITEM_SIZE - 5, hdcMemNumber, sxNum, syNum, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
+							SelectObject(memdc, Numbmp);
+							TransparentBlt(mdc, drawX + 5, drawY + 5, ITEM_SIZE - 5, ITEM_SIZE - 5, memdc, sxNum, syNum, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
 						}
 					}
 				}
@@ -2562,7 +2568,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 						int sx, sy;
 						GetNumberTileCoords(cnt, sx, sy);
 
-						TransparentBlt(mdc, drawX + 5, drawY + 5, ITEM_SIZE, ITEM_SIZE, hdcMemNumber, sx, sy, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
+						SelectObject(memdc, Numbmp);
+						TransparentBlt(mdc, drawX + 5, drawY + 5, ITEM_SIZE, ITEM_SIZE, memdc, sx, sy, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
 					}
 				}
 			}
@@ -2652,9 +2659,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			}
 
 
-			DeleteDC(hdcMemNumber);
 			DeleteDC(hdcMemItem);
-			ReleaseDC(NULL, hdcScreen);
 
 			//숫자가 아이템 위로 오도록
 			if (show_inventory || show_cook || show_craft) {
