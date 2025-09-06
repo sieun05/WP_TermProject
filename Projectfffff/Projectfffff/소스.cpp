@@ -1725,7 +1725,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		//제작칸 드래그
 		if (dragInCrafting) {
 			if (show_inventory ||show_cook ||show_craft) {
-				bool droppedInInventory = false;
+				//250906
+				/*bool droppedInInventory = false;
 				for (int row = 0; row < 3; ++row) {
 					for (int col = 0; col < 10; ++col) {
 						int slotX = (centerx - 760 / 2 + 89) + (59 * col);
@@ -1739,10 +1740,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 							break;
 						}
 					}
-				}
-				if (!droppedInInventory) {
-					AddItemToInventory(dragCraftingItem.itemID, 1);
-				}
+				}*/
+				//if (!droppedInInventory) {
+				AddItemToInventory(dragCraftingItem.itemID, 1);
+				//}
+				//250906
 			}
 			dragInCrafting = false;
 			dragCraftingX = -1;
@@ -1750,57 +1752,57 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			InvalidateRect(hWnd, NULL, FALSE);
 		}
 
-		//요리칸 드래그
-		if (drag&& show_cook) {
-			if (PtInRect(&firstSlot, { mouseX, mouseY }) && cookitem[0].itemID == 0) {
-				cookitem[0] = drag_item;
-			}
-			else if (PtInRect(&secondSlot, { mouseX, mouseY }) && cookitem[1].itemID == 0) {
-				cookitem[1] = drag_item;
-			}
-			else {
-				AddItemToInventory(drag_item.itemID, drag_item.itemcnt);
-			}
+		////요리칸 드래그
+		//if (drag&& show_cook) {
+		//	if (PtInRect(&firstSlot, { mouseX, mouseY }) && cookitem[0].itemID == 0) {
+		//		cookitem[0] = drag_item;
+		//	}
+		//	else if (PtInRect(&secondSlot, { mouseX, mouseY }) && cookitem[1].itemID == 0) {
+		//		cookitem[1] = drag_item;
+		//	}
+		//	else {
+		//		AddItemToInventory(drag_item.itemID, drag_item.itemcnt);
+		//	}
 
-			if (cookitem[0].itemID != 0 && cookitem[1].itemID != 0) {
-				if (CanCombine(cookitem[0], cookitem[1])) {
-					cookitem[2] = CombineItems(cookitem[0], cookitem[1]);
-					--cookitem[0].itemcnt;
-					--cookitem[1].itemcnt;
-					if (cookitem[0].itemcnt == 0)
-						cookitem[0].itemID = 0;
-					if (cookitem[1].itemcnt == 0)
-						cookitem[1].itemID = 0;
-				}
-			}
-			drag = false;
-			dragX = -1;
-			dragY = -1;
-		}
-		if (drag && (show_cook|| show_craft)) {
-			bool droppedInInventory = false;
-			
-			for (int row = 0; row < 3; ++row) {
-				for (int col = 0; col < 10; ++col) {
-					int slotX = centerx - 760 / 2 + 89 + 59 * col;
-					int slotY = (row == 0) ? 395 : (row == 1) ? 465 : 524;
+		//	if (cookitem[0].itemID != 0 && cookitem[1].itemID != 0) {
+		//		if (CanCombine(cookitem[0], cookitem[1])) {
+		//			cookitem[2] = CombineItems(cookitem[0], cookitem[1]);
+		//			--cookitem[0].itemcnt;
+		//			--cookitem[1].itemcnt;
+		//			if (cookitem[0].itemcnt == 0)
+		//				cookitem[0].itemID = 0;
+		//			if (cookitem[1].itemcnt == 0)
+		//				cookitem[1].itemID = 0;
+		//		}
+		//	}
+		//	drag = false;
+		//	dragX = -1;
+		//	dragY = -1;
+		//}
+		//if (drag && (show_cook /* || show_craft*/)) { //250906
+		//	bool droppedInInventory = false;
+		//	
+		//	for (int row = 0; row < 3; ++row) {
+		//		for (int col = 0; col < 10; ++col) {
+		//			int slotX = centerx - 760 / 2 + 89 + 59 * col;
+		//			int slotY = (row == 0) ? 395 : (row == 1) ? 465 : 524;
 
-					RECT invSlot = { slotX, slotY, slotX + 51, slotY + 51 };
+		//			RECT invSlot = { slotX, slotY, slotX + 51, slotY + 51 };
 
-					if (PtInRect(&invSlot, { mouseX, mouseY }) && inventory[row][col].itemID == 0) {
-						inventory[row][col] = drag_item;
-						droppedInInventory = true;
-						break;
-					}
-				}
-				if (droppedInInventory) break;
-			}
-			if (!droppedInInventory) {
-				AddItemToInventory(drag_item.itemID, drag_item.itemcnt);
-			}
-			
-			InvalidateRect(hWnd, NULL, FALSE);
-		}
+		//			if (PtInRect(&invSlot, { mouseX, mouseY }) && inventory[row][col].itemID == 0) {
+		//				inventory[row][col] = drag_item;
+		//				droppedInInventory = true;
+		//				break;
+		//			}
+		//		}
+		//		if (droppedInInventory) break;
+		//	}
+		//	if (!droppedInInventory) {
+		//		AddItemToInventory(drag_item.itemID, drag_item.itemcnt);
+		//	}
+		//	
+		//	InvalidateRect(hWnd, NULL, FALSE);
+		//}
 		if (drag) {
 
 			//쓰레기통에 템 버리기

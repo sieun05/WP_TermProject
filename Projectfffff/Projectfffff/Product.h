@@ -13,7 +13,8 @@ bool HasRequiredItemsForCraft(int itemID, int requiredCount) {
     for (int row = 0; row < 3; ++row) {
         for (int col = 0; col < 10; ++col) {
             if (inventory[row][col].itemID == itemID) {
-                if (not challenge[1]) challenge[1] = 1;
+                /*if (not challenge[1]) 
+                    challenge[1] = 1;*/
                 totalItemCount += inventory[row][col].itemcnt;
             }
         }
@@ -23,6 +24,12 @@ bool HasRequiredItemsForCraft(int itemID, int requiredCount) {
 
 
 bool RemoveItemsFromInventory(int itemID, int count) {
+
+    int totalItemCount = 0;
+    int itemrow[5]{};
+    int itemcol[5]{};
+    int index = 0;
+
     for (int row = 0; row < 3; ++row) {
         for (int col = 0; col < 10; ++col) {
             if (inventory[row][col].itemID == itemID) {
@@ -32,6 +39,29 @@ bool RemoveItemsFromInventory(int itemID, int count) {
                         inventory[row][col].itemID = 0;
                     }
                     return true;
+                }
+                else {
+                    totalItemCount += inventory[row][col].itemcnt;
+                    itemrow[index] = row;
+                    itemcol[index] = col;
+                    index++;
+
+                    if (totalItemCount >= count) {
+                        for (int i = 0; i < index; i++) {
+                            if (inventory[itemrow[i]][itemcol[i]].itemcnt < count) {
+                                count -= inventory[itemcol[i]][itemcol[i]].itemcnt;
+                                inventory[itemrow[i]][itemcol[i]].itemcnt = 0;
+                                inventory[itemrow[i]][itemcol[i]].itemID = 0;
+                            }
+                            else {
+                                inventory[itemrow[i]][itemcol[i]].itemcnt -= count;
+                                if (inventory[itemrow[i]][itemcol[i]].itemcnt == 0) {
+                                    inventory[itemrow[i]][itemcol[i]].itemID = 0;
+                                }
+                                return true;
+                            }
+                        }
+                    }
                 }
             }
         }
