@@ -2535,11 +2535,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 							if (cnt < 1) cnt = 1;
 							if (cnt > 10) cnt = 10;
 
-							int sxNum, syNum;
-							GetNumberTileCoords(cnt, sxNum, syNum);
+							int sx, sy;
+							GetNumberTileCoords(cnt, sx, sy);
 
 							SelectObject(memdc, Numbmp);
-							TransparentBlt(mdc, drawX + 5, drawY + 5, ITEM_SIZE - 5, ITEM_SIZE - 5, memdc, sxNum, syNum, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
+							TransparentBlt(mdc, drawX + 3, drawY + 3, ITEM_SIZE, ITEM_SIZE, memdc, sx, sy, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
 						}
 					}
 				}
@@ -2577,7 +2577,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 						GetNumberTileCoords(cnt, sx, sy);
 
 						SelectObject(memdc, Numbmp);
-						TransparentBlt(mdc, drawX + 5, drawY + 5, ITEM_SIZE, ITEM_SIZE, memdc, sx, sy, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
+						TransparentBlt(mdc, drawX + 3, drawY + 3, ITEM_SIZE, ITEM_SIZE, memdc, sx, sy, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
 					}
 				}
 			}
