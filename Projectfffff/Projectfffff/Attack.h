@@ -11,7 +11,7 @@ extern int challenge[7];
 inline void AttackDagger(Player& p, Boss& boss, int bx, int by) {
     const int R = 80;
     const int DAMAGE = 10;
-    //const int KNOCKBACK = 40;
+    const int KNOCKBACK = 40;
     const int STEP_SIZE = 10;
 
     if (boss.hp <= 0) return;
@@ -451,93 +451,147 @@ inline void DrawMagics(HDC mdc, int bx, int by) {
     }
 }
 
+//250914
 void CheckBossHit(Boss& boss, Player& p, int bx, int by, Direction playerDirection, DWORD currentTime, bool& boss_flag) {
-    const int DAMAGE_DAGGER = 10;
-    const int DAMAGE_LONGSWORD = 10;
-    const int DAMAGE_ARROW = 5;
-    const int DAMAGE_MAGIC = 15;
+    
+	if (boss.hp <= 0) return;
+    
+    const int R_DAGGER = 80;
+    const int D_DAGGER = 10;
 
-    //단검 공격
-    if (playerDirection == DIR_DOWN || playerDirection == DIR_UP || playerDirection == DIR_LEFT || playerDirection == DIR_RIGHT) {
-        const int RADIUS = 80;
+    const int R_LONGSWORD = 120;
+    const int D_LONGSWORD = 10;
 
-        int dx = (boss.x - bx) - p.x;
-        int dy = (boss.y - by) - p.y;
-        int dist = dx * dx + dy * dy;
+    const int R_ARROW = 35;
+    const int D_ARROW = 5;
 
-        if (dist <= RADIUS * RADIUS) {
-            boss.hp -= DAMAGE_DAGGER;
-           if (boss.hp < 0) {
-                boss.hp = 0;
-                if (not challenge[6]) challenge[6] = 1;
-                boss_flag = false;
-            }
+    const int R_MAGIC = 35;
+    const int D_MAGIC = 15;
+    
+    //보스 위치
+	int dx = (boss.x - bx) - p.x;
+	int dy = (boss.y - by) - p.y;
+	int dist = dx * dx + dy * dy;
 
-            boss.hitFlag = true;
-            boss.hitTime = currentTime;
+
+    auto damageToBoss = 
+        [&](int dmg) {
+        
+        if (boss.hp <= 0) return;
+
+        boss.hp -= dmg; //보스 체력 깍기
+        if (boss.hp < 0) boss.hp = 0;
+        boss.hitFlag = true;
+        boss.hitTime = currentTime;
+
+        if (boss.hp == 0) {
+            if (!challenge[6]) challenge[6] = 1; //도전과제
+            boss_flag = false;
         }
+        };
+
+    
+	//단검 공격
+
+	bool daggerHit = false;
+    switch (playerDirection) {
+    case DIR_DOWN: {
+		if (dy > 0) daggerHit = true;
+		break;
+    }
+	case DIR_DOWN_RIGHT: {
+		if (dx > 0 && dy > 0) daggerHit = true;
+        break;
     }
 
-    // 장검 공격
-    if (playerDirection == DIR_DOWN_RIGHT || playerDirection == DIR_UP_LEFT || playerDirection == DIR_DOWN_LEFT || playerDirection == DIR_UP_RIGHT) {
-        const int RADIUS = 120;
 
-        int dx = (boss.x - bx) - p.x;
-        int dy = (boss.y - by) - p.y;
-        int dist = dx * dx + dy * dy;
 
-        if (dist <= RADIUS * RADIUS) {
-            boss.hp -= DAMAGE_LONGSWORD;
-            if (boss.hp < 0) {
-                boss.hp = 0;
-                if (not challenge[6]) challenge[6] = 1;
-                boss_flag = false;
-            }
+    //const int DAMAGE_DAGGER = 10;
+    //const int DAMAGE_LONGSWORD = 10;
+    //const int DAMAGE_ARROW = 5;
+    //const int DAMAGE_MAGIC = 15;
 
-            boss.hitFlag = true;
-            boss.hitTime = currentTime;
-        }
-    }
+    ////단검 공격
+    //if (playerDirection == DIR_DOWN || playerDirection == DIR_UP || playerDirection == DIR_LEFT || playerDirection == DIR_RIGHT) {
+    //    const int RADIUS = 80;
 
-    // 화살 공격
-    if (playerDirection == DIR_DOWN || playerDirection == DIR_DOWN_LEFT || playerDirection == DIR_DOWN_RIGHT || playerDirection == DIR_RIGHT || playerDirection == DIR_LEFT) {
-        const int RADIUS = 250;
+    //    int dx = (boss.x - bx) - p.x;
+    //    int dy = (boss.y - by) - p.y;
+    //    int dist = dx * dx + dy * dy;
 
-        int dx = (boss.x - bx) - p.x;
-        int dy = (boss.y - by) - p.y;
-        int dist = dx * dx + dy * dy;
+    //    if (dist <= RADIUS * RADIUS) {
+    //        boss.hp -= DAMAGE_DAGGER;
+    //       if (boss.hp < 0) {
+    //            boss.hp = 0;
+    //            if (not challenge[6]) challenge[6] = 1;
+    //            boss_flag = false;
+    //        }
 
-        if (dist <= RADIUS * RADIUS) {
-            boss.hp -= DAMAGE_ARROW;
-            if (boss.hp < 0) {
-                boss.hp = 0;
-                if (not challenge[6]) challenge[6] = 1;
-                boss_flag = false;
-            }
+    //        boss.hitFlag = true;
+    //        boss.hitTime = currentTime;
+    //    }
+    //}
 
-            boss.hitFlag = true;
-            boss.hitTime = currentTime;
-        }
-    }
+    //// 장검 공격
+    //if (playerDirection == DIR_DOWN_RIGHT || playerDirection == DIR_UP_LEFT || playerDirection == DIR_DOWN_LEFT || playerDirection == DIR_UP_RIGHT) {
+    //    const int RADIUS = 120;
 
-    // 마법 공격
-    if (playerDirection == DIR_UP || playerDirection == DIR_DOWN_LEFT || playerDirection == DIR_DOWN_RIGHT || playerDirection == DIR_LEFT || playerDirection == DIR_RIGHT) {
-        const int RADIUS = 210;
+    //    int dx = (boss.x - bx) - p.x;
+    //    int dy = (boss.y - by) - p.y;
+    //    int dist = dx * dx + dy * dy;
 
-        int dx = (boss.x - bx) - p.x;
-        int dy = (boss.y - by) - p.y;
-        int dist = dx * dx + dy * dy;
+    //    if (dist <= RADIUS * RADIUS) {
+    //        boss.hp -= DAMAGE_LONGSWORD;
+    //        if (boss.hp < 0) {
+    //            boss.hp = 0;
+    //            if (not challenge[6]) challenge[6] = 1;
+    //            boss_flag = false;
+    //        }
 
-        if (dist <= RADIUS * RADIUS) {
-            boss.hp -= DAMAGE_MAGIC;
-            if (boss.hp < 0) {
-                boss.hp = 0;
-                if (not challenge[6]) challenge[6] = 1;
-                boss_flag = false;
-            }
+    //        boss.hitFlag = true;
+    //        boss.hitTime = currentTime;
+    //    }
+    //}
 
-            boss.hitFlag = true;
-            boss.hitTime = currentTime;
-        }
-    }
+    //// 화살 공격
+    //if (playerDirection == DIR_DOWN || playerDirection == DIR_DOWN_LEFT || playerDirection == DIR_DOWN_RIGHT || playerDirection == DIR_RIGHT || playerDirection == DIR_LEFT) {
+    //    const int RADIUS = 250;
+
+    //    int dx = (boss.x - bx) - p.x;
+    //    int dy = (boss.y - by) - p.y;
+    //    int dist = dx * dx + dy * dy;
+
+    //    if (dist <= RADIUS * RADIUS) {
+    //        boss.hp -= DAMAGE_ARROW;
+    //        if (boss.hp < 0) {
+    //            boss.hp = 0;
+    //            if (not challenge[6]) challenge[6] = 1;
+    //            boss_flag = false;
+    //        }
+
+    //        boss.hitFlag = true;
+    //        boss.hitTime = currentTime;
+    //    }
+    //}
+
+    //// 마법 공격
+    //if (playerDirection == DIR_UP || playerDirection == DIR_DOWN_LEFT || playerDirection == DIR_DOWN_RIGHT || playerDirection == DIR_LEFT || playerDirection == DIR_RIGHT) {
+    //    const int RADIUS = 210;
+
+    //    int dx = (boss.x - bx) - p.x;
+    //    int dy = (boss.y - by) - p.y;
+    //    int dist = dx * dx + dy * dy;
+
+    //    if (dist <= RADIUS * RADIUS) {
+    //        boss.hp -= DAMAGE_MAGIC;
+    //        if (boss.hp < 0) {
+    //            boss.hp = 0;
+    //            if (not challenge[6]) challenge[6] = 1;
+    //            boss_flag = false;
+    //        }
+
+    //        boss.hitFlag = true;
+    //        boss.hitTime = currentTime;
+    //    }
+    //}
 }
