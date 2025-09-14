@@ -452,31 +452,19 @@ inline void DrawMagics(HDC mdc, int bx, int by) {
 }
 
 //250914
-void CheckBossHit(Boss& boss, Player& p, int bx, int by, Direction playerDirection, DWORD currentTime, bool& boss_flag) {
-    
-	if (boss.hp <= 0) return;
-    
-    const int R_DAGGER = 80;
-    const int D_DAGGER = 10;
+void CheckBossHit(Boss& boss, Player& p, int bx, int by, Direction playerDirection, DWORD currentTime, bool& boss_flag, int itemID) {
 
-    const int R_LONGSWORD = 120;
-    const int D_LONGSWORD = 10;
+    if (boss.hp <= 0) return;
 
-    const int R_ARROW = 35;
-    const int D_ARROW = 5;
-
-    const int R_MAGIC = 35;
-    const int D_MAGIC = 15;
-    
     //보스 위치
-	int dx = (boss.x - bx) - p.x;
-	int dy = (boss.y - by) - p.y;
-	int dist = dx * dx + dy * dy;
+    int dx = (boss.x - bx) - p.x;
+    int dy = (boss.y - by) - p.y;
+    int dist = dx * dx + dy * dy;
 
 
-    auto damageToBoss = 
+    auto damageToBoss =
         [&](int dmg) {
-        
+
         if (boss.hp <= 0) return;
 
         boss.hp -= dmg; //보스 체력 깍기
@@ -490,108 +478,98 @@ void CheckBossHit(Boss& boss, Player& p, int bx, int by, Direction playerDirecti
         }
         };
 
-    
-	//단검 공격
-
-	bool daggerHit = false;
+    bool daggerHit = false;
     switch (playerDirection) {
     case DIR_DOWN: {
-		if (dy > 0) daggerHit = true;
-		break;
-    }
-	case DIR_DOWN_RIGHT: {
-		if (dx > 0 && dy > 0) daggerHit = true;
+        if (dy > 0) daggerHit = true;
         break;
     }
+    case DIR_DOWN_RIGHT: {
+        if (dx > 0 && dy > 0) daggerHit = true;
+        break;
+    }
+    case DIR_RIGHT: {
+        if (dx > 0) daggerHit = true;
+        break;
+    }
+    case DIR_UP_RIGHT: {
+        if (dx > 0 && dy < 0) daggerHit = true;
+        break;
+    }
+    case DIR_UP: {
+        if (dy < 0) daggerHit = true;
+        break;
+    }
+    case DIR_UP_LEFT: {
+        if (dx < 0 && dy < 0) daggerHit = true;
+        break;
+    }
+    case DIR_LEFT: {
+        if (dx < 0) daggerHit = true;
+        break;
+    }
+    case DIR_DOWN_LEFT: {
+        if (dx < 0 && dy > 0) daggerHit = true;
+        break;
+    }
+    }
 
+    //단검 공격
 
+    const int R_DAGGER = 150;
+    const int D_DAGGER = 10;
 
-    //const int DAMAGE_DAGGER = 10;
-    //const int DAMAGE_LONGSWORD = 10;
-    //const int DAMAGE_ARROW = 5;
-    //const int DAMAGE_MAGIC = 15;
+    if (itemID == 1) {
+        if (daggerHit && dist <= R_DAGGER * R_DAGGER) {
+            damageToBoss(D_DAGGER);
+        }
+    }
 
-    ////단검 공격
-    //if (playerDirection == DIR_DOWN || playerDirection == DIR_UP || playerDirection == DIR_LEFT || playerDirection == DIR_RIGHT) {
-    //    const int RADIUS = 80;
+    // 장검 공격
+    const int R_LONGSWORD = 200;
+    const int D_LONGSWORD = 10;
 
-    //    int dx = (boss.x - bx) - p.x;
-    //    int dy = (boss.y - by) - p.y;
-    //    int dist = dx * dx + dy * dy;
+    if (itemID == 2) {
+        if (daggerHit && dist <= R_LONGSWORD * R_LONGSWORD) {
+            damageToBoss(D_LONGSWORD);
+        }
+    }
 
-    //    if (dist <= RADIUS * RADIUS) {
-    //        boss.hp -= DAMAGE_DAGGER;
-    //       if (boss.hp < 0) {
-    //            boss.hp = 0;
-    //            if (not challenge[6]) challenge[6] = 1;
-    //            boss_flag = false;
-    //        }
+    //화살 공격
+    const int R_ARROW = 130;
+    const int D_ARROW = 5;
 
-    //        boss.hitFlag = true;
-    //        boss.hitTime = currentTime;
-    //    }
-    //}
+    if (itemID == 3) {
+		extern vector<Arrow> arrow;
+        for (auto& a : arrow) {
+            if (!a.active) continue;
+            int adx = boss.x - a.x;
+            int ady = boss.y - a.y;
+            int adist = adx * adx + ady * ady;
+            if (adist <= R_ARROW * R_ARROW) {
+                damageToBoss(D_ARROW);
+                a.active = false;
+                break;
+            }
+		}
+    }
 
-    //// 장검 공격
-    //if (playerDirection == DIR_DOWN_RIGHT || playerDirection == DIR_UP_LEFT || playerDirection == DIR_DOWN_LEFT || playerDirection == DIR_UP_RIGHT) {
-    //    const int RADIUS = 120;
+    //마법 공격
+    const int R_MAGIC = 130;
+    const int D_MAGIC = 15;
 
-    //    int dx = (boss.x - bx) - p.x;
-    //    int dy = (boss.y - by) - p.y;
-    //    int dist = dx * dx + dy * dy;
-
-    //    if (dist <= RADIUS * RADIUS) {
-    //        boss.hp -= DAMAGE_LONGSWORD;
-    //        if (boss.hp < 0) {
-    //            boss.hp = 0;
-    //            if (not challenge[6]) challenge[6] = 1;
-    //            boss_flag = false;
-    //        }
-
-    //        boss.hitFlag = true;
-    //        boss.hitTime = currentTime;
-    //    }
-    //}
-
-    //// 화살 공격
-    //if (playerDirection == DIR_DOWN || playerDirection == DIR_DOWN_LEFT || playerDirection == DIR_DOWN_RIGHT || playerDirection == DIR_RIGHT || playerDirection == DIR_LEFT) {
-    //    const int RADIUS = 250;
-
-    //    int dx = (boss.x - bx) - p.x;
-    //    int dy = (boss.y - by) - p.y;
-    //    int dist = dx * dx + dy * dy;
-
-    //    if (dist <= RADIUS * RADIUS) {
-    //        boss.hp -= DAMAGE_ARROW;
-    //        if (boss.hp < 0) {
-    //            boss.hp = 0;
-    //            if (not challenge[6]) challenge[6] = 1;
-    //            boss_flag = false;
-    //        }
-
-    //        boss.hitFlag = true;
-    //        boss.hitTime = currentTime;
-    //    }
-    //}
-
-    //// 마법 공격
-    //if (playerDirection == DIR_UP || playerDirection == DIR_DOWN_LEFT || playerDirection == DIR_DOWN_RIGHT || playerDirection == DIR_LEFT || playerDirection == DIR_RIGHT) {
-    //    const int RADIUS = 210;
-
-    //    int dx = (boss.x - bx) - p.x;
-    //    int dy = (boss.y - by) - p.y;
-    //    int dist = dx * dx + dy * dy;
-
-    //    if (dist <= RADIUS * RADIUS) {
-    //        boss.hp -= DAMAGE_MAGIC;
-    //        if (boss.hp < 0) {
-    //            boss.hp = 0;
-    //            if (not challenge[6]) challenge[6] = 1;
-    //            boss_flag = false;
-    //        }
-
-    //        boss.hitFlag = true;
-    //        boss.hitTime = currentTime;
-    //    }
-    //}
+    if (itemID == 4) {
+		extern vector<Magic> magics;
+        for (auto& m : magics) {
+            if (!m.active) continue;
+            int mdx = boss.x - m.x;
+            int mdy = boss.y - m.y;
+            int mdist = mdx * mdx + mdy * mdy;
+            if (mdist <= R_MAGIC * R_MAGIC) {
+                damageToBoss(D_MAGIC);
+                m.active = false;
+                break;
+            }
+        }
+    }
 }

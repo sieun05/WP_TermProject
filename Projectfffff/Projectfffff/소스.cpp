@@ -1350,6 +1350,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
 				DWORD now = GetTickCount64();
 				CheckBossAttackHit(boss, p, bx, by, now);
+
+				//250914 보스 활,지팡이 공격
+				int slot = InvenSelec_Nor - 1;
+				int heldItemID = inventory[0][slot].itemID;
+				CheckBossHit(boss, p, bx, by, p.dir, now, boss_flag, heldItemID);
+				
 			}
 
 			//(25.06.08) - 김정현
@@ -2057,7 +2063,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
 			break;
 		}
-		case 'A':
+		case 'A': //250914 - 보스공격 수정
 		case 'a':{ //무기 공격 (단검, 장검, 활, 불)
 			int playerWorldX = bx + p.x;
 			int playerWorldY = by + p.y;
@@ -2075,15 +2081,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 					AttackDagger(playerWorldX, playerWorldY, p.dir, monster1, monster1_cnt);
 					AttackDagger(playerWorldX, playerWorldY, p.dir, monster2, monster2_cnt);
 					p.atkType = 1;
-					if(boss_flag)
-						CheckBossHit(boss,p, bx, by,p.dir,now, boss_flag);
+					if (boss_flag)
+						CheckBossHit(boss, p, bx, by, p.dir, now, boss_flag, heldItemID);
 				}
 				else if (heldItemID == 2) {
 					AttackLongsword(playerWorldX, playerWorldY, p.dir, monster1, monster1_cnt);
 					AttackLongsword(playerWorldX, playerWorldY, p.dir, monster2, monster2_cnt);
 					p.atkType = 2;
 					if (boss_flag)
-						CheckBossHit(boss, p, bx, by, p.dir, now, boss_flag);
+						CheckBossHit(boss, p, bx, by, p.dir, now, boss_flag, heldItemID);
 				}
 				else if (heldItemID == 3 && Arrow_ex) {
 					if (now - p.lastArrowTime >= Player::COOLDOWN_MS) {
@@ -2096,7 +2102,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 										inventory[i][j].itemID = 0;
 									p.lastArrowTime = now;
 									if (boss_flag)
-										CheckBossHit(boss, p, bx, by, p.dir, now, boss_flag);
+										CheckBossHit(boss, p, bx, by, p.dir, now, boss_flag, heldItemID);
 									goto shot;
 								}
 							}
@@ -2110,7 +2116,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 						ShootMagic(playerWorldX, playerWorldY, p.dir);
 						p.lastMagicTime = now;
 						if (boss_flag)
-							CheckBossHit(boss, p, bx, by, p.dir, now, boss_flag);
+							CheckBossHit(boss, p, bx, by, p.dir, now, boss_flag, heldItemID);
 					}
 					break;
 				}
