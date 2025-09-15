@@ -1354,7 +1354,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 				//250914 보스 활,지팡이 공격
 				int slot = InvenSelec_Nor - 1;
 				int heldItemID = inventory[0][slot].itemID;
-				CheckBossHit(boss, p, bx, by, p.dir, now, boss_flag, heldItemID);
+				if(heldItemID == 3 || heldItemID == 4)
+					CheckBossHit(boss, p, bx, by, p.dir, now, boss_flag, heldItemID);
 				
 			}
 
