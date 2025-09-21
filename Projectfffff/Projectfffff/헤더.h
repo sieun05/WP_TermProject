@@ -10,6 +10,7 @@
 #include <cmath>
 #include <vector>
 #include <algorithm>
+#include <array>
 #include "Collision.h"
 #include "Cell.h"
 #include "Player.h"

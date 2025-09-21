@@ -139,6 +139,14 @@ void RemoveMonster1() {
 			Mon_steps1[i] = Mon_steps1[monster1_cnt - 1];
 
 			--monster1_cnt;
+			//25.09.22 몬스터 계속 생성
+			if (monster1_cnt < 20) {
+				while (monster1_cnt == 20) {
+					if (SpawnMonster1(&monster1[monster1_cnt - 1])) {
+						monster1_cnt++;
+					}
+				}
+			}
 			monster_cnt++;
 		}
 		else
@@ -165,6 +173,14 @@ void RemoveMonster2() {
 			Mon_steps2[i] = Mon_steps2[monster2_cnt - 1];
 
 			--monster2_cnt;
+			//25.09.22 몬스터 계속 생성
+			if (monster2_cnt < 20) {
+				while (monster2_cnt == 20) {
+					if (SpawnMonster2(&monster2[monster2_cnt - 1])) {
+						monster2_cnt++;
+					}
+				}
+			}
 			monster_cnt++;
 		}
 		else
@@ -776,7 +792,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 				//(25.06.05) - 김정현
 				//기본 등장 몬스터 초기화
 
-				monster1_cnt = 10;
+				//25.09.22
+
+				monster1_cnt = 20;
 				for (int i = 0; i < monster1_cnt; ++i) {
 					InitMonster(&monster1[i], Monster_1);
 					if (!SpawnMonster1(&monster1[i])) {
@@ -787,7 +805,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 					Mon_steps1[i] = 0;
 				}
 
-				monster2_cnt = 10;
+				monster2_cnt = 20;
 				for (int i = 0; i < monster2_cnt; ++i) {
 					InitMonster(&monster2[i], Monster_2);
 					if (!SpawnMonster2(&monster2[i])) {
@@ -883,6 +901,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			//몬스터 죽음 처리
 			RemoveMonster1();
 			RemoveMonster2();
+
 
 			//(25.06.08) - 김정현
 			//플레이어 피해 시간 체크
