@@ -60,24 +60,24 @@ struct Boss {
     bool hitFlag = false;
     DWORD hitTime = 0;
 };
-
-void InitBossSprite() {
-    bossBmp = (HBITMAP)LoadImage(NULL, L"비트맵\\몬스터\\보스.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-    bossDC = CreateCompatibleDC(NULL);
-    SelectObject(bossDC, bossBmp);
-}
-
-void CleanupBossSprite() {
-    if (bossDC) {
-        DeleteDC(bossDC);
-    }
-    if (bossBmp) {
-        DeleteObject(bossBmp);
-    }
-}
+//
+//void InitBossSprite() { //-- 수정필요
+//    bossBmp = (HBITMAP)LoadImage(NULL, L"비트맵\\몬스터\\보스.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+//    bossDC = CreateCompatibleDC(NULL);
+//    SelectObject(bossDC, bossBmp);
+//}
+//
+//void CleanupBossSprite() {
+//    if (bossDC) {
+//        DeleteDC(bossDC);
+//    }
+//    if (bossBmp) {
+//        DeleteObject(bossBmp);
+//    }
+//}
 
 //2506103
-void DrawBossMonster(HDC mdc, const Boss& boss, int bx, int by, const Effect& attackEffect) {
+void DrawBossMonster(HDC mdc, const Boss& boss, int bx, int by, const Effect& attackEffect) { //--수정필요
     int row = 0;
     int frame = boss.animFrame;
 

@@ -68,5 +68,8 @@
     <ClInclude Include="헤더.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Direct2D_Player_Render.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,7 +1,6 @@
 #pragma comment(lib, "Msimg32.lib")
 #include "헤더.h"
 
-
 //20250906
 
 using namespace std;
@@ -9,6 +8,10 @@ using namespace std;
 #define marginX 16
 #define marginY 39
 
+extern ID2D1Factory* g_pD2DFactory;
+extern ID2D1HwndRenderTarget* g_pRenderTarget;
+extern IWICImagingFactory* g_pWICFactory;
+extern ID2D1Bitmap* g_WallBitmap;
 
 HINSTANCE g_hInst;
 LPCTSTR lpszClass = L"Window Class Name";
@@ -31,24 +34,24 @@ int challenge[7]{};
 
 //(25.06.09) - 김정현
 // 인벤토리 비트맵 관련 변수(설명 비트맵 추가)
-HBITMAP itemDescBmp = nullptr;
-HDC itemDescDC = nullptr;
+//HBITMAP itemDescBmp = nullptr;
+//HDC itemDescDC = nullptr;
 int mouseX = -1;
 int mouseY = -1;
 
-HBITMAP InvenExpanded = nullptr;
-HBITMAP InvenNormal = nullptr;
-HBITMAP InvenExpandednum = nullptr;
-HBITMAP InvenNormalnum = nullptr;
-HBITMAP SelecInven_Ex = nullptr;
-HBITMAP SelecInven_Nor = nullptr;
-
-HDC hdcExpanded = nullptr;
-HDC hdcNormal = nullptr;
-HDC hdcExpandednum = nullptr;
-HDC hdcNormalnum = nullptr;
-HDC hdcSelecInven_Ex = nullptr;
-HDC hdcSelecInven_Nor = nullptr;
+//HBITMAP InvenExpanded = nullptr;
+//HBITMAP InvenNormal = nullptr;
+//HBITMAP InvenExpandednum = nullptr;
+//HBITMAP InvenNormalnum = nullptr;
+//HBITMAP SelecInven_Ex = nullptr;
+//HBITMAP SelecInven_Nor = nullptr;
+//
+//HDC hdcExpanded = nullptr;
+//HDC hdcNormal = nullptr;
+//HDC hdcExpandednum = nullptr;
+//HDC hdcNormalnum = nullptr;
+//HDC hdcSelecInven_Ex = nullptr;
+//HDC hdcSelecInven_Nor = nullptr;
 
 int bmpExp_W = 0;
 int bmpExp_H = 0;
@@ -190,29 +193,29 @@ void RemoveMonster2() {
 
 //(25.06.07) - 김정현
 //플레이어 비트맵 관련 변수
-HBITMAP PlayerBmp = nullptr;
-HDC PlayerDC = nullptr;
+//HBITMAP PlayerBmp = nullptr;
+//HDC PlayerDC = nullptr;
 int PlayerBmpWidth = 0;
 int PlayerBmpHeight = 0;
 
 //(25.06.08) - 김정현
 //무기 공격 관련 변수 (추가)
 vector<Arrow> arrow;
-HBITMAP arrowBmp = nullptr;
-HDC ArrowDC = nullptr;
+//HBITMAP arrowBmp = nullptr;
+//HDC ArrowDC = nullptr;
 
 vector<Magic> magics;
-HBITMAP fireBmp = nullptr;
-HDC FireDC = nullptr;
-HBITMAP waterEffectBmp = nullptr;
-HDC waterEffectDC = nullptr;
+//HBITMAP fireBmp = nullptr;
+//HDC FireDC = nullptr;
+//HBITMAP waterEffectBmp = nullptr;
+//HDC waterEffectDC = nullptr;
 
 bool useWaterEffect = false;
 
-HBITMAP DaggerAttackBmp = nullptr;
-HDC DaggerAttackDC = nullptr;
-HBITMAP LongswordAttackBmp = nullptr;
-HDC LongswordAttackDC = nullptr;
+//HBITMAP DaggerAttackBmp = nullptr;
+//HDC DaggerAttackDC = nullptr;
+//HBITMAP LongswordAttackBmp = nullptr;
+//HDC LongswordAttackDC = nullptr;
 const int ATK_SPR_WD = 64;
 const int ATK_SPR_HD = 64;
 const int ATK_SPR_WL = 75;
@@ -253,33 +256,104 @@ bool AddItemToInventory(int itemID, int count) {
 static RECT firstSlot;
 static RECT secondSlot;
 static RECT thirdSlot;
+
 //25.06.10 - 김정현
 //요리 아이템 함수
-void DrawCookItems(HDC mdc, HDC itemDC, HDC memdc) {
+//void DrawCookItems(HDC mdc, HDC itemDC, HDC memdc) {
+//	// 첫 번째 칸 그리기
+//	if (cookitem[0].itemID != 0) {
+//		int sx, sy;
+//		GetItemTileCoords(cookitem[0].itemID, sx, sy);
+//		int sxNum, syNum;
+//		GetNumberTileCoords(cookitem[0].itemcnt, sxNum, syNum);
+//
+//		int drawX = firstSlot.left;
+//		int drawY = firstSlot.top;
+//		TransparentBlt(mdc, drawX, drawY, ITEM_SIZE, ITEM_SIZE, itemDC, sx, sy, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
+//		TransparentBlt(mdc, drawX, drawY, ITEM_SIZE, ITEM_SIZE, memdc, sxNum, syNum, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
+//	}
+//
+//	// 두 번째 칸 그리기
+//	if (cookitem[1].itemID != 0) {
+//		int sx, sy;
+//		GetItemTileCoords(cookitem[1].itemID, sx, sy);
+//		int sxNum, syNum;
+//		GetNumberTileCoords(cookitem[1].itemcnt, sxNum, syNum);
+//
+//		int drawX = secondSlot.left;
+//		int drawY = secondSlot.top;
+//		TransparentBlt(mdc, drawX, drawY, ITEM_SIZE, ITEM_SIZE, itemDC, sx, sy, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
+//		TransparentBlt(mdc, drawX, drawY, ITEM_SIZE, ITEM_SIZE, memdc, sxNum, syNum, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
+//	}
+//
+//	// 세 번째 칸 그리기 (결과물 칸)
+//	if (cookitem[2].itemID != 0) {
+//		int sx, sy;
+//		GetItemTileCoords(cookitem[2].itemID, sx, sy);
+//		int drawX = thirdSlot.left;
+//		int drawY = thirdSlot.top;
+//		TransparentBlt(mdc, drawX, drawY, ITEM_SIZE, ITEM_SIZE, itemDC, sx, sy, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
+//	}
+//}
+
+void DrawCookItems() {
 	// 첫 번째 칸 그리기
 	if (cookitem[0].itemID != 0) {
 		int sx, sy;
 		GetItemTileCoords(cookitem[0].itemID, sx, sy);
-		int sxNum, syNum;
-		GetNumberTileCoords(cookitem[0].itemcnt, sxNum, syNum);
-
 		int drawX = firstSlot.left;
 		int drawY = firstSlot.top;
-		TransparentBlt(mdc, drawX, drawY, ITEM_SIZE, ITEM_SIZE, itemDC, sx, sy, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
-		TransparentBlt(mdc, drawX, drawY, ITEM_SIZE, ITEM_SIZE, memdc, sxNum, syNum, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
+		D2D1_RECT_F destRect = D2D1::RectF(
+			static_cast<FLOAT>(drawX),
+			static_cast<FLOAT>(drawY),
+			static_cast<FLOAT>(drawX + ITEM_SIZE),
+			static_cast<FLOAT>(drawY + ITEM_SIZE)
+		);
+
+		D2D1_RECT_F srcRect = D2D1::RectF(
+			static_cast<FLOAT>(sx),
+			static_cast<FLOAT>(sy),
+			static_cast<FLOAT>(sx + ITEM_SIZE),
+			static_cast<FLOAT>(sy + ITEM_SIZE)
+		);
+
+		g_pRenderTarget->DrawBitmap(
+			Itembmp,  // itemDC에 해당하는 아이템 시트 비트맵 (알파 포함 PNG)
+			destRect,
+			1.0f,
+			D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+			srcRect
+		);
 	}
 
 	// 두 번째 칸 그리기
 	if (cookitem[1].itemID != 0) {
 		int sx, sy;
 		GetItemTileCoords(cookitem[1].itemID, sx, sy);
-		int sxNum, syNum;
-		GetNumberTileCoords(cookitem[1].itemcnt, sxNum, syNum);
-
 		int drawX = secondSlot.left;
 		int drawY = secondSlot.top;
-		TransparentBlt(mdc, drawX, drawY, ITEM_SIZE, ITEM_SIZE, itemDC, sx, sy, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
-		TransparentBlt(mdc, drawX, drawY, ITEM_SIZE, ITEM_SIZE, memdc, sxNum, syNum, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
+		D2D1_RECT_F destRect = D2D1::RectF(
+			static_cast<FLOAT>(drawX),
+			static_cast<FLOAT>(drawY),
+			static_cast<FLOAT>(drawX + ITEM_SIZE),
+			static_cast<FLOAT>(drawY + ITEM_SIZE)
+		);
+
+		D2D1_RECT_F srcRect = D2D1::RectF(
+			static_cast<FLOAT>(sx),
+			static_cast<FLOAT>(sy),
+			static_cast<FLOAT>(sx + ITEM_SIZE),
+			static_cast<FLOAT>(sy + ITEM_SIZE)
+		);
+
+		g_pRenderTarget->DrawBitmap(
+			Itembmp,  // itemDC에 해당하는 아이템 시트 비트맵 (알파 포함 PNG)
+			destRect,
+			1.0f,
+			D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+			srcRect
+		);
+
 	}
 
 	// 세 번째 칸 그리기 (결과물 칸)
@@ -288,7 +362,28 @@ void DrawCookItems(HDC mdc, HDC itemDC, HDC memdc) {
 		GetItemTileCoords(cookitem[2].itemID, sx, sy);
 		int drawX = thirdSlot.left;
 		int drawY = thirdSlot.top;
-		TransparentBlt(mdc, drawX, drawY, ITEM_SIZE, ITEM_SIZE, itemDC, sx, sy, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
+		D2D1_RECT_F destRect = D2D1::RectF(
+			static_cast<FLOAT>(drawX),
+			static_cast<FLOAT>(drawY),
+			static_cast<FLOAT>(drawX + ITEM_SIZE),
+			static_cast<FLOAT>(drawY + ITEM_SIZE)
+		);
+
+		D2D1_RECT_F srcRect = D2D1::RectF(
+			static_cast<FLOAT>(sx),
+			static_cast<FLOAT>(sy),
+			static_cast<FLOAT>(sx + ITEM_SIZE),
+			static_cast<FLOAT>(sy + ITEM_SIZE)
+		);
+
+		g_pRenderTarget->DrawBitmap(
+			Itembmp,  // itemDC에 해당하는 아이템 시트 비트맵 (알파 포함 PNG)
+			destRect,
+			1.0f,
+			D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+			srcRect
+		);
+
 	}
 }
 
@@ -483,13 +578,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 	static int water_sel{};
 	static int water_delay{};
 
-	static HBITMAP wall;
-	static HBITMAP ground[3];
-	static HBITMAP water;
-	
-	static HBITMAP hp_bar;
-	static HBITMAP mp_bar;
-	static HBITMAP stmn_bar;
+	//static HBITMAP wall;
+	//static HBITMAP ground[3];
+	//static HBITMAP water;
+	//
+	//static HBITMAP hp_bar;
+	//static HBITMAP mp_bar;
+	//static HBITMAP stmn_bar;
 	
 	//장신구, 속도, 보스 관련 변수
 	static int regenCnt = 0; //장신구 효과 카운트
@@ -521,15 +616,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 	//2506102 제작창, 요리창
 	static bool show_craft{};
 	static bool show_cook{};
-	static HBITMAP craftUI;
-	static HBITMAP cookUI;
+	//static HBITMAP craftUI;
+	//static HBITMAP cookUI;
 
 	//2506103
 	static bool show_pclick;
-	static HBITMAP pclick[3];
+	//static HBITMAP pclick[3];
 	static bool reset_flag[2]{};
 
-	static HBITMAP player_died;
+	//static HBITMAP player_died;
 
 	static bool boss_flag{};
 	static int boss_delay{};
@@ -540,43 +635,88 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
 	//2506105
 	static int screen{}; //0 메인화면, 1 게임화면
-	static HBITMAP mainscreen;
-	static HBITMAP endscreen;
+	//static HBITMAP mainscreen;
+	//static HBITMAP endscreen;
 
 	static int min{}, sec{};
-	
-
 
 	BLENDFUNCTION blend;
 
 	switch (iMessage) {
 	case WM_CREATE:
+	{
+		InitDirect2D(hWnd);
+		CoInitialize(NULL); // WIC용
+		HRESULT hr = CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER,
+			IID_PPV_ARGS(&g_pWICFactory));
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\타일\\벽.png", &g_WallBitmap);
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\타일\\땅3.png", &ground[0]);
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\타일\\풀땅.png", &ground[1]);
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\타일\\주황풀땅3.png", &ground[2]);
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\타일\\물.png", &water);
+
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\시작화면.bmp", &mainscreen);
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\인벤\\엔딩화면.png", &endscreen);
+
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\인벤\\도전과제.png", &pclick[0]);
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\인벤\\체크.png", &pclick[1]);
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\인벤\\단축키.png", &pclick[2]);
+
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\플레이어\\죽음.png", &player_died);
+
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\플레이어\\체력.png", &hp_bar);
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\플레이어\\마나.png", &mp_bar);
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\플레이어\\스테미너.png", &stmn_bar);
+
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\플레이어\\1.png", &PlayerBmp);
+
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\인벤\\제작.png", &craftUI);
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\인벤\\요리창.png", &cookUI);
+
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\아이템\\화살.png", &arrowBmp);
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\플레이어\\공격모션.png", &DaggerAttackBmp);
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\플레이어\\장검 공격모션.png", &LongswordAttackBmp);
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\플레이어\\불.png", &fireBmp);
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\플레이어\\물.png", &waterEffectBmp);
+
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\인벤\\아이템 설명.png", &itemDescBmp);
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\아이템\\1.png", &Itembmp);
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\아이템 개수.png", &Numbmp);
+
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\인벤\\전체 인벤창.png", &InvenExpanded);
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\인벤\\10칸 인벤토리.png", &InvenNormal);
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\인벤\\인벤토리 숫자.png", &InvenExpandednum);
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\인벤\\10칸 인벤토리 숫자.png", &InvenNormalnum);
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\인벤\\인벤 선택 테두리.png", &SelecInven_Ex);
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\인벤\\인벤 선택 테두리.png", &SelecInven_Nor);
+
+
 		//2506104
 		std::memcpy(game_map_init, game_map, sizeof(game_map));
 
 		SetTimer(hWnd, 1, 20, NULL);
 		SetTimer(hWnd, 2, 1000, NULL);
 
-		wall = (HBITMAP)LoadImage(NULL, L"비트맵\\타일\\벽.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+		/*wall = (HBITMAP)LoadImage(NULL, L"비트맵\\타일\\벽.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		ground[0] = (HBITMAP)LoadImage(NULL, L"비트맵\\타일\\땅3.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		ground[1] = (HBITMAP)LoadImage(NULL, L"비트맵\\타일\\풀땅.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		ground[2] = (HBITMAP)LoadImage(NULL, L"비트맵\\타일\\주황풀땅3.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); water = (HBITMAP)LoadImage(NULL, L"비트맵\\타일\\물.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 
 		hp_bar = (HBITMAP)LoadImage(NULL, L"비트맵\\플레이어\\체력.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		mp_bar = (HBITMAP)LoadImage(NULL, L"비트맵\\플레이어\\마나.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-		stmn_bar = (HBITMAP)LoadImage(NULL, L"비트맵\\플레이어\\스테미너.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+		stmn_bar = (HBITMAP)LoadImage(NULL, L"비트맵\\플레이어\\스테미너.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);*/
 
 		//2506103 인벤폴더에 해당 비트맵들 추가해야함
-		craftUI = (HBITMAP)LoadImage(NULL, L"비트맵\\인벤\\제작.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+		/*craftUI = (HBITMAP)LoadImage(NULL, L"비트맵\\인벤\\제작.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		cookUI = (HBITMAP)LoadImage(NULL, L"비트맵\\인벤\\요리창.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		pclick[0] = (HBITMAP)LoadImage(NULL, L"비트맵\\인벤\\도전과제.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		pclick[1] = (HBITMAP)LoadImage(NULL, L"비트맵\\인벤\\체크.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-		pclick[2] = (HBITMAP)LoadImage(NULL, L"비트맵\\인벤\\단축키.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+		pclick[2] = (HBITMAP)LoadImage(NULL, L"비트맵\\인벤\\단축키.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);*/
 
 		//2506103
-		player_died = (HBITMAP)LoadImage(NULL, L"비트맵\\플레이어\\죽음.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+	/*	player_died = (HBITMAP)LoadImage(NULL, L"비트맵\\플레이어\\죽음.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		mainscreen = (HBITMAP)LoadImage(NULL, L"비트맵\\시작화면.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-		endscreen = (HBITMAP)LoadImage(NULL, L"비트맵\\인벤\\엔딩화면.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+		endscreen = (HBITMAP)LoadImage(NULL, L"비트맵\\인벤\\엔딩화면.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);*/
 
 		GetClientRect(hWnd, &clientRect);
 		width = clientRect.right - clientRect.left;
@@ -598,44 +738,64 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		if (by > MAP_PIXEL_HEIGHT - height) by = MAP_PIXEL_HEIGHT - height;
 
 		//알파블렌딩
-		tempDC = GetDC(hWnd);
+		// 그라디언트 스톱 생성
+		g_pRenderTarget->CreateGradientStopCollection(stops, 2, &pGradientStops);
+
+		// 중심 위치 설정
+		float centerX = clientRect.right / 2.0f;
+		float centerY = clientRect.bottom / 2.0f;
+		float radiusX = clientRect.right / 1.2f;
+		float radiusY = clientRect.bottom / 1.2f;
+
+		// 브러시 생성
+		g_pRenderTarget->CreateRadialGradientBrush(
+			D2D1::RadialGradientBrushProperties(
+				D2D1::Point2F(centerX, centerY),
+				D2D1::Point2F(0, 0),
+				radiusX, radiusY
+			),
+			pGradientStops,
+			&pRadialBrush
+		);
+
+		/*tempDC = GetDC(hWnd);
 		g_LightMask = CreateLightingMask(tempDC, clientRect.right * 2, clientRect.bottom * 2, 400);
-		ReleaseDC(hWnd, tempDC);
+		ReleaseDC(hWnd, tempDC);*/
 
-		//(25.06.08) - 김정현
-		//화살, 공격모션, 불 비트맵
-		arrowBmp = (HBITMAP)LoadImage(NULL, L"비트맵\\아이템\\화살.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-		ArrowDC = CreateCompatibleDC(NULL);
-		SelectObject(ArrowDC, arrowBmp);
-		DaggerAttackBmp = (HBITMAP)LoadImage(NULL,L"비트맵\\플레이어\\공격모션.bmp",IMAGE_BITMAP, 0, 0,LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-		DaggerAttackDC = CreateCompatibleDC(NULL);
-		SelectObject(DaggerAttackDC, DaggerAttackBmp);
-		LongswordAttackBmp = (HBITMAP)LoadImage(NULL,L"비트맵\\플레이어\\장검 공격모션.bmp",IMAGE_BITMAP, 0, 0,LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-		LongswordAttackDC = CreateCompatibleDC(NULL);
-		SelectObject(LongswordAttackDC, LongswordAttackBmp);
-		fireBmp = (HBITMAP)LoadImage(NULL,L"비트맵\\플레이어\\불.bmp",IMAGE_BITMAP, 0, 0,LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-		FireDC = CreateCompatibleDC(NULL);
-		SelectObject(FireDC, fireBmp);
-		waterEffectBmp = (HBITMAP)LoadImage(NULL,L"비트맵\\플레이어\\물.bmp",IMAGE_BITMAP, 0, 0,LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-		waterEffectDC = CreateCompatibleDC(NULL);
-		SelectObject(waterEffectDC, waterEffectBmp);
+		////(25.06.08) - 김정현
+		////화살, 공격모션, 불 비트맵
+		//arrowBmp = (HBITMAP)LoadImage(NULL, L"비트맵\\아이템\\화살.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+		//ArrowDC = CreateCompatibleDC(NULL);
+		//SelectObject(ArrowDC, arrowBmp);
+		//DaggerAttackBmp = (HBITMAP)LoadImage(NULL,L"비트맵\\플레이어\\공격모션.bmp",IMAGE_BITMAP, 0, 0,LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+		//DaggerAttackDC = CreateCompatibleDC(NULL);
+		//SelectObject(DaggerAttackDC, DaggerAttackBmp);
+		//LongswordAttackBmp = (HBITMAP)LoadImage(NULL,L"비트맵\\플레이어\\장검 공격모션.bmp",IMAGE_BITMAP, 0, 0,LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+		//LongswordAttackDC = CreateCompatibleDC(NULL);
+		//SelectObject(LongswordAttackDC, LongswordAttackBmp);
+		//fireBmp = (HBITMAP)LoadImage(NULL,L"비트맵\\플레이어\\불.bmp",IMAGE_BITMAP, 0, 0,LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+		//FireDC = CreateCompatibleDC(NULL);
+		//SelectObject(FireDC, fireBmp);
+		//waterEffectBmp = (HBITMAP)LoadImage(NULL,L"비트맵\\플레이어\\물.bmp",IMAGE_BITMAP, 0, 0,LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+		//waterEffectDC = CreateCompatibleDC(NULL);
+		//SelectObject(waterEffectDC, waterEffectBmp);
 
-		//(25.06.02) - 김정현
-		//인벤 비트맵 로드
-		if (!InitInvBitmaps(nullptr)) {
-			MessageBox(hWnd, L"인벤토리 비트맵 로드 실패", L"Error", MB_OK | MB_ICONERROR);
-		}
-		if (!InitItemBitmaps()) {
-			MessageBox(hWnd, L"아이템 비트맵 로드 실패", L"Error", MB_OK | MB_ICONERROR);
-		}
+		////(25.06.02) - 김정현
+		////인벤 비트맵 로드
+		//if (!InitInvBitmaps(nullptr)) {
+		//	MessageBox(hWnd, L"인벤토리 비트맵 로드 실패", L"Error", MB_OK | MB_ICONERROR);
+		//}
+		//if (!InitItemBitmaps()) {
+		//	MessageBox(hWnd, L"아이템 비트맵 로드 실패", L"Error", MB_OK | MB_ICONERROR);
+		//}
 
 		//(25.06.09) - 김정현
 		// 인벤 아이템 설명창 함수
-		InitItemDescription();
+		//InitItemDescription(); ??
 
 		//(25.06.07) - 김정현
 		//플레이어 비트맵 불러오기
-		InitPlayerSprite(g_hInst);
+		//InitPlayerSprite(g_hInst);
 
 		//(25.06.08) - 김정현
 		//플레이어 초기화 추가
@@ -660,7 +820,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		boss.prepareStartTime = 0;
 		boss.x = MAP_PIXEL_WIDTH / 2 - 35;
 		boss.y = MAP_PIXEL_WIDTH / 2 - 190;
-		InitBossSprite();
+		//InitBossSprite(); //수정필요 ??
 
 		//(25.06.10) - 김정현
 		//기본 제작칸 초기화
@@ -671,7 +831,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		production[3].itemID = 63;
 		production[4].itemID = 64;
 		production[5].itemID = 92;
-		for (int i = 0; i < 6; i++){
+		for (int i = 0; i < 6; i++) {
 			production[i].itemcnt = 1;
 		}
 
@@ -694,12 +854,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		secondSlot = { centerx - 760 / 2 + 294, 302 + 63 - 90, centerx - 760 / 2 + 294 + 58, 302 + 63 + 58 };
 		thirdSlot = { centerx - 760 / 2 + 294 + 58 + 60, 302 + 33 - 90, centerx - 760 / 2 + 294 + 58 + 60 + 58, 302 + 33 + 58 };
 		break;
+	}
+
 	case WM_TIMER:
+	{
 		switch (wParam) {
 		case 1:
 		{
 			//2506105
-			if (challenge[6] and screen==1) {
+			if (challenge[6] and screen == 1) {
 				game_end_flag = true;
 			}
 
@@ -708,9 +871,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 				reblend = true;
 
 				//알파블렌딩
-				tempDC = GetDC(hWnd);
+				/*tempDC = GetDC(hWnd);
 				g_LightMask = CreateLightingMask(tempDC, clientRect.right * 2, clientRect.bottom * 2, 400);
-				ReleaseDC(hWnd, tempDC);
+				ReleaseDC(hWnd, tempDC);*/
 			}
 
 			//2506103
@@ -718,9 +881,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 				reset_flag[0] = false;
 
 				//알파블렌딩
-				tempDC = GetDC(hWnd);
+				/*tempDC = GetDC(hWnd);
 				g_LightMask = CreateLightingMask(tempDC, clientRect.right * 2, clientRect.bottom * 2, 400);
-				ReleaseDC(hWnd, tempDC);
+				ReleaseDC(hWnd, tempDC);*/
 
 				p.died_flag = false;
 				p.hp = p.maxHp;
@@ -773,9 +936,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 				if (by > MAP_PIXEL_HEIGHT - height) by = MAP_PIXEL_HEIGHT - height;
 
 				//알파블렌딩
-				tempDC = GetDC(hWnd);
+		/*		tempDC = GetDC(hWnd);
 				g_LightMask = CreateLightingMask(tempDC, clientRect.right * 2, clientRect.bottom * 2, 400);
-				ReleaseDC(hWnd, tempDC);
+				ReleaseDC(hWnd, tempDC);*/
 
 				for (int j = 0; j < 3; j++) {
 					for (int i = 0; i < 10; ++i) {
@@ -794,7 +957,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
 				//25.09.22
 
-				monster1_cnt = 20;
+				monster1_cnt = 20; //?? 몬스터 렌더링 수정
 				for (int i = 0; i < monster1_cnt; ++i) {
 					InitMonster(&monster1[i], Monster_1);
 					if (!SpawnMonster1(&monster1[i])) {
@@ -878,7 +1041,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 				inventory[0][8].itemID = 63;
 				inventory[0][8].itemcnt = 10;
 
-				screen = 1;		
+				screen = 1;
 			}
 
 			if (p.hp <= 0)
@@ -1351,7 +1514,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			//(25.06.10) - 김정현
 			//보스 애니메이션 구현
 			//2506103
-			if (boss_flag) {
+			if (boss_flag) { //? ? 보스 렌더링 수정
 				boss_delay++;
 
 				static DWORD idleStartTime = 0;
@@ -1373,9 +1536,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 				//250914 보스 활,지팡이 공격
 				int slot = InvenSelec_Nor - 1;
 				int heldItemID = inventory[0][slot].itemID;
-				if(heldItemID == 3 || heldItemID == 4)
+				if (heldItemID == 3 || heldItemID == 4)
 					CheckBossHit(boss, p, bx, by, p.dir, now, boss_flag, heldItemID);
-				
+
 			}
 
 			//(25.06.08) - 김정현
@@ -1432,10 +1595,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		}
 		InvalidateRect(hWnd, NULL, FALSE);
 		break;
-
+	}
 		//(25.06.04) - 김정현
 		//아이템 인벤 이동 드래그 구현
-
 	case WM_LBUTTONDOWN: {
 		int mouseX = LOWORD(lParam);
 		int mouseY = HIWORD(lParam);
@@ -1743,6 +1905,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		InvalidateRect(hWnd, NULL, FALSE);
 		break;
 	}
+	{
 	case WM_MOUSEMOVE: {
 		mouseX = LOWORD(lParam);
 		mouseY = HIWORD(lParam);
@@ -1755,6 +1918,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			dragMouseY = mouseY;
 		}
 		break;
+	}
 	}
 	case WM_LBUTTONUP: {
 		int mouseX = LOWORD(lParam);
@@ -2043,12 +2207,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		case 'q':
 		case 'Q':
 			if ((screen == 1 and game_end_flag) or screen == 0) {
-				CleanupInvBitmaps();
-				CleanupItemBitmaps();
-				CleanupPlayerSprite();
-				CleanupBossSprite();
-				DeleteDC(ArrowDC);
-				DeleteObject(arrowBmp);
+				/*CleanupInvBitmaps();
+				CleanupItemBitmaps();*/
+				/*CleanupPlayerSprite();
+				CleanupBossSprite();*/
+				/*DeleteDC(ArrowDC);
+				DeleteObject(arrowBmp);*/
+				ReleaseD2DBitmaps();
 				PostQuitMessage(0);
 			}
 			break;
@@ -2201,9 +2366,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		memdc2 = CreateCompatibleDC(mdc);
 		FillRect(mdc, &clientRect, (HBRUSH)GetStockObject(WHITE_BRUSH));
 
+		g_pRenderTarget->BeginDraw();
+		g_pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White)); // 배경색
+
 		if (screen == 0) {
-			SelectObject(memdc, mainscreen);
-			BitBlt(mdc, 0, 0, clientRect.right, clientRect.bottom, memdc, 0, 0, SRCCOPY);
+			D2D1_RECT_F destRect = D2D1::RectF(0, 0, (float)clientRect.right, (float)clientRect.bottom);
+			g_pRenderTarget->DrawBitmap(mainscreen, destRect);
+
+			/*SelectObject(memdc, mainscreen);
+			BitBlt(mdc, 0, 0, clientRect.right, clientRect.bottom, memdc, 0, 0, SRCCOPY);*/
 		}
 		else if(screen==1){
 			int start_col{ bx / CELL_SIZE };
@@ -2235,16 +2406,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 					case 9:
 					case 10:
 					case 11:
-						SelectObject(memdc, ground[0]);
-						DrawGroundTile(mdc, memdc, x, y, map_col, map_row);
+						//SelectObject(memdc, ground[0]);
+						DrawGroundTile(mdc, x, y, map_col, map_row);
 						break;
 					case 1:
 					case 2:
 					case 3:
 						wallpaint = 0;
-						SelectObject(memdc, ground[0]);
-						SelectObject(memdc2, wall);
-						DrawWallTile(mdc, &memdc, memdc2, x, y, map_col, map_row, wallpaint);
+						/*SelectObject(memdc, ground[0]);
+						SelectObject(memdc2, wall);*/
+						DrawWallTile(mdc, x, y, map_col, map_row, wallpaint);
 						break;
 					case 5:
 					case 6:
@@ -2254,14 +2425,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 							groundtile_num = 1;
 						else if (game_map[map_row][map_col].type == 6)
 							groundtile_num = 2;
-						SelectObject(memdc2, ground[groundtile_num]);
-						DrawGround2Tile(mdc, memdc2, x, y, map_col, map_row);
+						//SelectObject(memdc2, ground[groundtile_num]);
+						DrawGround2Tile(mdc, groundtile_num, x, y, map_col, map_row);
 						break;
 					}
 					case 7:
-						SelectObject(memdc, ground[0]);
-						SelectObject(memdc2, water);
-						DrawWaterTile(mdc, memdc, memdc2, x, y, map_col, map_row, water_sel);
+						/*SelectObject(memdc, ground[0]);
+						SelectObject(memdc2, water);*/
+						DrawWaterTile(mdc, x, y, map_col, map_row, water_sel);
 						break;
 					}
 				}
@@ -2269,15 +2440,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
 			//(25.06.09)-김정현
 			//템 드랍 (위치 변경)
-			itemDC = CreateCompatibleDC(mdc);
-			SelectObject(itemDC, Itembmp);
-			DrawWorldItems(mdc, itemDC);
-			DeleteDC(itemDC);
+			/*itemDC = CreateCompatibleDC(mdc);
+			SelectObject(itemDC, Itembmp);*/
+			DrawWorldItems();
+			//DeleteDC(itemDC);
 
 			//(25.06.08) - 김정현
 			//날아가는 화살, 불 그리기
-			DrawArrows(mdc, bx, by);
-			DrawMagics(mdc, bx, by);
+			DrawArrows(bx, by);
+			DrawMagics(bx, by);
 
 			//(25.06.09) - 김정현
 			//몬스터, 플레이어 순서 변경
@@ -2285,7 +2456,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			//(25.06.07) - 김정현
 			//몬스터 그리기 (벽 뒤에있는 몬스터는 벽에 가려지게 위치 옮김)
 			for (int i = 0; i < monster1_cnt; ++i) {
-				DrawMonster(&monster1[i], mdc);
+				DrawMonster(&monster1[i], mdc);// ----------이 함수 수정필요
 			}
 			for (int i = 0; i < monster2_cnt; ++i) {
 				DrawMonster(&monster2[i], mdc);
@@ -2297,7 +2468,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
 			//(25.06.08) - 김정현
 			//공격모션 그리기
-			if (p.isAttacking) {
+			/*if (p.isAttacking) {
 				DWORD now = GetTickCount64();
 				DWORD elapsed = now - p.atkStart;
 
@@ -2323,6 +2494,75 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 						TransparentBlt(mdc, dest.left, dest.top, ATK_SPR_WL, ATK_SPR_HL, dc, sx, sy, ATK_SPR_WL, ATK_SPR_HL, RGB(0, 0, 255));
 					}
 				}
+			}*/
+
+			if (p.isAttacking) {
+				DWORD now = GetTickCount64();
+				DWORD elapsed = now - p.atkStart;
+
+				int frame = (elapsed / 100) % ATK_COLS;
+				if (elapsed > 100 * ATK_COLS) {
+					p.isAttacking = false;
+				}
+				else {
+					int row = p.atkDir;
+
+					RECT dest;
+					if (p.atkType == 1) {
+						dest = { p.x - ATK_SPR_WD / 2, p.y - ATK_SPR_HD / 2, p.x + ATK_SPR_WD / 2, p.y + ATK_SPR_HD / 2 };
+						int sx = frame * ATK_SPR_WD;
+						int sy = row * ATK_SPR_HD;
+						D2D1_RECT_F destRect = D2D1::RectF(
+							static_cast<FLOAT>(dest.left),
+							static_cast<FLOAT>(dest.top),
+							static_cast<FLOAT>(dest.left + ATK_SPR_WD),
+							static_cast<FLOAT>(dest.top + ATK_SPR_HD)
+						);
+
+						D2D1_RECT_F srcRect = D2D1::RectF(
+							static_cast<FLOAT>(sx),
+							static_cast<FLOAT>(sy),
+							static_cast<FLOAT>(sx + ATK_SPR_WD),
+							static_cast<FLOAT>(sy + ATK_SPR_HD)
+						);
+
+						g_pRenderTarget->DrawBitmap(
+							DaggerAttackBmp,  // 알파 포함된 단검 공격 스프라이트 시트
+							destRect,
+							1.0f,
+							D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+							srcRect
+						);
+
+					}
+					else {
+						dest = { p.x - ATK_SPR_WL / 2, p.y - ATK_SPR_HL / 2, p.x + ATK_SPR_WL / 2, p.y + ATK_SPR_HL / 2 };
+						int sx = frame * ATK_SPR_WL;
+						int sy = row * ATK_SPR_HL;
+						D2D1_RECT_F destRect = D2D1::RectF(
+							static_cast<FLOAT>(dest.left),
+							static_cast<FLOAT>(dest.top),
+							static_cast<FLOAT>(dest.left + ATK_SPR_WL),
+							static_cast<FLOAT>(dest.top + ATK_SPR_HL)
+						);
+
+						D2D1_RECT_F srcRect = D2D1::RectF(
+							static_cast<FLOAT>(sx),
+							static_cast<FLOAT>(sy),
+							static_cast<FLOAT>(sx + ATK_SPR_WL),
+							static_cast<FLOAT>(sy + ATK_SPR_HL)
+						);
+
+						g_pRenderTarget->DrawBitmap(
+							LongswordAttackBmp,  // 알파 채널 포함된 롱소드 공격 비트맵
+							destRect,
+							1.0f,
+							D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+							srcRect
+						);
+
+					}
+				}
 			}
 
 			//벽에 가려진 땅 부분 비트맵
@@ -2346,15 +2586,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 					case 9:
 					case 10:
 					case 11:
-						SelectObject(memdc2, wall);
-						DrawGroundwallTile(mdc, memdc2, x, y, map_col, map_row);
+						//SelectObject(memdc2, wall);
+						DrawGroundwallTile(mdc, x, y, map_col, map_row);
 						break;
 					case 1:
 					case 2:
 					case 3:
 						wallpaint = 1;
-						SelectObject(memdc2, wall);
-						DrawWallTile(mdc, NULL, memdc2, x, y, map_col, map_row, wallpaint);
+						//SelectObject(memdc2, wall);
+						DrawWallTile(mdc, x, y, map_col, map_row, wallpaint);
 						break;
 					}
 				}
@@ -2365,14 +2605,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			//보스 그리기
 			//2506103 보스위치, 코드 위치 수정
 			if (boss_flag) {
-				DrawBossMonster(mdc, boss, bx, by, attackEffect);
+				DrawBossMonster(mdc, boss, bx, by, attackEffect); //----------이 함수 수정필요
 			}
 
 			//(25.06.07) - 오시은
 			//맵 전체 그림자 (알파블렌딩) - 수정해야함
 			//(25.06.08) - 오시은
 			//수정완료
-			maskDC = CreateCompatibleDC(mdc);
+			/*maskDC = CreateCompatibleDC(mdc);
 			oldMask = SelectObject(maskDC, g_LightMask);
 
 			int maskX = p.x - g_LightWidth / 2;
@@ -2383,8 +2623,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 				maskDC, 0, 0, g_LightWidth, g_LightHeight, blend);
 
 			SelectObject(maskDC, oldMask);
-			DeleteDC(maskDC);
+			DeleteDC(maskDC);*/
 
+			g_pRenderTarget->FillRectangle(
+				D2D1::RectF(0, 0, (FLOAT)clientRect.right, (FLOAT)clientRect.bottom),
+				pRadialBrush
+			);
 
 			//(25.06.06) - 김정현
 			//hp,mp,허기 바 그리기(비트맵 없어서 이렇게 해놓음)
@@ -2399,18 +2643,99 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			if (hpW < 0) hpW = 0;
 			if (hpW > barMaxW) hpW = barMaxW;
 
-			SelectObject(memdc, hp_bar);
+	/*		SelectObject(memdc, hp_bar);
 			TransparentBlt(mdc, barX, barY, barMaxW, barH, memdc, 0, 0, barMaxW, barH, RGB(0, 0, 255));
-			TransparentBlt(mdc, barX, barY, hpW, barH, memdc, 0, 23, hpW, barH, RGB(0, 0, 255));
+			TransparentBlt(mdc, barX, barY, hpW, barH, memdc, 0, 23, hpW, barH, RGB(0, 0, 255));*/
+
+			// 1. 빈 체력 바 출력
+			{
+				D2D1_RECT_F destRect = D2D1::RectF(
+					static_cast<FLOAT>(barX),
+					static_cast<FLOAT>(barY),
+					static_cast<FLOAT>(barX + barMaxW),
+					static_cast<FLOAT>(barY + barH)
+				);
+
+				D2D1_RECT_F srcRect = D2D1::RectF(0.0f, 0.0f, static_cast<FLOAT>(barMaxW), static_cast<FLOAT>(barH));
+
+				g_pRenderTarget->DrawBitmap(
+					hp_bar,  // 알파 포함된 비트맵
+					destRect,
+					1.0f,
+					D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+					srcRect
+				);
+			}
+
+			// 2. 체력 채워진 부분 출력
+			{
+				D2D1_RECT_F destRect = D2D1::RectF(
+					static_cast<FLOAT>(barX),
+					static_cast<FLOAT>(barY),
+					static_cast<FLOAT>(barX + hpW),
+					static_cast<FLOAT>(barY + barH)
+				);
+
+				D2D1_RECT_F srcRect = D2D1::RectF(0.0f, 23.0f, static_cast<FLOAT>(hpW), 23.0f + static_cast<FLOAT>(barH));
+
+				g_pRenderTarget->DrawBitmap(
+					hp_bar,  // 같은 비트맵에서 다른 영역
+					destRect,
+					1.0f,
+					D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+					srcRect
+				);
+			}
+
 
 			barY += barH + 5;
 			int mpW = p.mp * barMaxW / 100;
 			if (mpW < 0) mpW = 0;
 			if (mpW > barMaxW) mpW = barMaxW;
 
-			SelectObject(memdc, mp_bar);
+			/*SelectObject(memdc, mp_bar);
 			TransparentBlt(mdc, barX, barY, barMaxW, barH, memdc, 0, 0, barMaxW, barH, RGB(0, 0, 255));
-			TransparentBlt(mdc, barX, barY, mpW, barH, memdc, 0, 23, mpW, barH, RGB(0, 0, 255));
+			TransparentBlt(mdc, barX, barY, mpW, barH, memdc, 0, 23, mpW, barH, RGB(0, 0, 255));*/
+
+			// 1. 빈 마나 바 출력
+			{
+				D2D1_RECT_F destRect = D2D1::RectF(
+					static_cast<FLOAT>(barX),
+					static_cast<FLOAT>(barY),
+					static_cast<FLOAT>(barX + barMaxW),
+					static_cast<FLOAT>(barY + barH)
+				);
+
+				D2D1_RECT_F srcRect = D2D1::RectF(0.0f, 0.0f, static_cast<FLOAT>(barMaxW), static_cast<FLOAT>(barH));
+
+				g_pRenderTarget->DrawBitmap(
+					mp_bar,  // 알파 포함된 마나 바 비트맵
+					destRect,
+					1.0f,
+					D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+					srcRect
+				);
+			}
+
+			// 2. 채워진 마나 부분 출력
+			{
+				D2D1_RECT_F destRect = D2D1::RectF(
+					static_cast<FLOAT>(barX),
+					static_cast<FLOAT>(barY),
+					static_cast<FLOAT>(barX + mpW),
+					static_cast<FLOAT>(barY + barH)
+				);
+
+				D2D1_RECT_F srcRect = D2D1::RectF(0.0f, 23.0f, static_cast<FLOAT>(mpW), 23.0f + static_cast<FLOAT>(barH));
+
+				g_pRenderTarget->DrawBitmap(
+					mp_bar,  // 동일 비트맵, 다른 영역
+					destRect,
+					1.0f,
+					D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+					srcRect
+				);
+			}
 
 			barY += barH + 5;
 			barH = 12;
@@ -2418,9 +2743,49 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			if (hungerW < 0) hungerW = 0;
 			if (hungerW > barMaxW) hungerW = barMaxW;
 
-			SelectObject(memdc, stmn_bar);
-			TransparentBlt(mdc, barX, barY, barMaxW, barH, memdc, 0, 0, barMaxW, barH, RGB(0, 0, 255));
-			TransparentBlt(mdc, barX, barY, hungerW, barH, memdc, 0, 12, hungerW, barH, RGB(0, 0, 255));
+			//SelectObject(memdc, stmn_bar);
+			//TransparentBlt(mdc, barX, barY, barMaxW, barH, memdc, 0, 0, barMaxW, barH, RGB(0, 0, 255));
+			//TransparentBlt(mdc, barX, barY, hungerW, barH, memdc, 0, 12, hungerW, barH, RGB(0, 0, 255));
+
+			// 1. 빈 스태미나 바 출력
+			{
+				D2D1_RECT_F destRect = D2D1::RectF(
+					static_cast<FLOAT>(barX),
+					static_cast<FLOAT>(barY),
+					static_cast<FLOAT>(barX + barMaxW),
+					static_cast<FLOAT>(barY + barH)
+				);
+
+				D2D1_RECT_F srcRect = D2D1::RectF(0.0f, 0.0f, static_cast<FLOAT>(barMaxW), static_cast<FLOAT>(barH));
+
+				g_pRenderTarget->DrawBitmap(
+					stmn_bar,  // 알파 포함된 스태미나 바 비트맵
+					destRect,
+					1.0f,
+					D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+					srcRect
+				);
+			}
+
+			// 2. 채워진 스태미나 부분 출력
+			{
+				D2D1_RECT_F destRect = D2D1::RectF(
+					static_cast<FLOAT>(barX),
+					static_cast<FLOAT>(barY),
+					static_cast<FLOAT>(barX + hungerW),
+					static_cast<FLOAT>(barY + barH)
+				);
+
+				D2D1_RECT_F srcRect = D2D1::RectF(0.0f, 12.0f, static_cast<FLOAT>(hungerW), 12.0f + static_cast<FLOAT>(barH));
+
+				g_pRenderTarget->DrawBitmap(
+					stmn_bar,  // 동일 비트맵, 하단 영역 사용
+					destRect,
+					1.0f,
+					D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+					srcRect
+				);
+			}
 
 			//(25.06.02) - 김정현
 			//제작창, 장신구창, 인벤창 비트맵 적용
@@ -2432,17 +2797,67 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			//(25.06.08) - 오시은
 			//HDC 만들면 렉걸려서 위에서 정의함
 
-			hdcUse = show_inventory ? hdcExpanded : hdcNormal;
+			/*hdcUse = show_inventory ? hdcExpanded : hdcNormal;
 			hdcNum = show_inventory ? hdcExpandednum : hdcNormalnum;
-			hdcselec = show_inventory ? hdcSelecInven_Ex : hdcSelecInven_Nor;
+			hdcselec = show_inventory ? hdcSelecInven_Ex : hdcSelecInven_Nor;*/
 
-
-			if (show_inventory)
+			/*if (show_inventory)
 				TransparentBlt(mdc, centerx - 760 / 2, 50, 760, 547, hdcUse, 0, 0, bmpExp_W, bmpExp_H, RGB(0, 0, 255));
 			else {
 				if (!show_cook && !show_craft)
 					TransparentBlt(mdc, centerx - 760 / 2, clientRect.bottom - 95, 760, 95, hdcUse, 0, 0, bmpNor_W, bmpNor_H, RGB(0, 0, 255));
+			}*/
+
+			if (show_inventory) {
+				D2D1_RECT_F destRect = D2D1::RectF(
+					static_cast<FLOAT>(centerx - 760.0f / 2),
+					50.0f,
+					static_cast<FLOAT>(centerx + 760.0f / 2),
+					50.0f + 547.0f
+				);
+
+				D2D1_RECT_F srcRect = D2D1::RectF(
+					0.0f,
+					0.0f,
+					static_cast<FLOAT>(760),
+					static_cast<FLOAT>(547)
+				);
+
+				g_pRenderTarget->DrawBitmap(
+					InvenExpanded,  // 알파 포함된 UI 비트맵 (아이템 사용창 등)
+					destRect,
+					1.0f,
+					D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+					srcRect
+				);
 			}
+			else {
+				if (!show_cook && !show_craft) {
+					D2D1_RECT_F destRect = D2D1::RectF(
+						static_cast<FLOAT>(centerx - 760.0f / 2),
+						static_cast<FLOAT>(clientRect.bottom - 95),
+						static_cast<FLOAT>(centerx + 760.0f / 2),
+						static_cast<FLOAT>(clientRect.bottom)
+					);
+
+					D2D1_RECT_F srcRect = D2D1::RectF(
+						0.0f,
+						0.0f,
+						static_cast<FLOAT>(760),
+						static_cast<FLOAT>(95)
+					);
+
+					g_pRenderTarget->DrawBitmap(
+						InvenNormal,  // 알파 채널 포함된 하단 UI 비트맵
+						destRect,
+						1.0f,
+						D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+						srcRect
+					);
+
+				}
+			}
+
 			//(25.06.08) - 김정현
 			//장비칸 그리기 (위치 변경) + 장신구 추가
 
@@ -2454,78 +2869,238 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			RECT bootsSlot = { invX + 458, invY + 180, invX + 458 + 52, invY + 180 + 52 };
 			RECT ringSlot = { invX + 458, invY + 240, invX + 458 + 52, invY + 240 + 52 };
 
+			//if (show_inventory) {
+			//	HDC  hdcScreen = GetDC(NULL);
+			//	HDC  hdcMemItem = CreateCompatibleDC(hdcScreen);
+			//	SelectObject(hdcMemItem, Itembmp);
+			//	// 머리
+			//	if (playeritem[0].itemID) {
+			//		int sx, sy;
+			//		GetItemTileCoords(playeritem[0].itemID, sx, sy);
+			//		TransparentBlt(mdc,
+			//			headSlot.left, headSlot.top, 52, 52,
+			//			hdcMemItem, sx, sy, ITEM_SIZE, ITEM_SIZE,
+			//			RGB(0, 0, 255));
+			//	}
+			//	// 몸통
+			//	if (playeritem[1].itemID) {
+			//		int sx, sy;
+			//		GetItemTileCoords(playeritem[1].itemID, sx, sy);
+			//		TransparentBlt(mdc,
+			//			bodySlot.left, bodySlot.top, 52, 52,
+			//			hdcMemItem, sx, sy, ITEM_SIZE, ITEM_SIZE,
+			//			RGB(0, 0, 255));
+			//	}
+			//	// 신발
+			//	if (playeritem[2].itemID) {
+			//		int sx, sy;
+			//		GetItemTileCoords(playeritem[2].itemID, sx, sy);
+			//		TransparentBlt(mdc,
+			//			bootsSlot.left, bootsSlot.top, 52, 52,
+			//			hdcMemItem, sx, sy, ITEM_SIZE, ITEM_SIZE,
+			//			RGB(0, 0, 255));
+			//	}
+			//	//장신구
+			//	if (playeritem[3].itemID) {
+			//		int sx, sy;
+			//		GetItemTileCoords(playeritem[3].itemID, sx, sy);
+			//		TransparentBlt(mdc,
+			//			ringSlot.left, ringSlot.top, 52, 52,
+			//			hdcMemItem, sx, sy, ITEM_SIZE, ITEM_SIZE,
+			//			RGB(0, 0, 255));
+			//	}
+			//	DeleteDC(hdcMemItem);
+			//	ReleaseDC(NULL, hdcScreen);
+			//}
+
 			if (show_inventory) {
-				HDC  hdcScreen = GetDC(NULL);
-				HDC  hdcMemItem = CreateCompatibleDC(hdcScreen);
-				SelectObject(hdcMemItem, Itembmp);
+				//HDC  hdcScreen = GetDC(NULL);
+				//HDC  hdcMemItem = CreateCompatibleDC(hdcScreen);
+				//SelectObject(hdcMemItem, Itembmp);
 				// 머리
 				if (playeritem[0].itemID) {
 					int sx, sy;
 					GetItemTileCoords(playeritem[0].itemID, sx, sy);
-					TransparentBlt(mdc,
-						headSlot.left, headSlot.top, 52, 52,
-						hdcMemItem, sx, sy, ITEM_SIZE, ITEM_SIZE,
-						RGB(0, 0, 255));
+					D2D1_RECT_F destRect = D2D1::RectF(
+						static_cast<FLOAT>(headSlot.left),
+						static_cast<FLOAT>(headSlot.top),
+						static_cast<FLOAT>(headSlot.left + 52),
+						static_cast<FLOAT>(headSlot.top + 52)
+					);
+
+					D2D1_RECT_F srcRect = D2D1::RectF(
+						static_cast<FLOAT>(sx),
+						static_cast<FLOAT>(sy),
+						static_cast<FLOAT>(sx + ITEM_SIZE),
+						static_cast<FLOAT>(sy + ITEM_SIZE)
+					);
+
+					g_pRenderTarget->DrawBitmap(
+						Itembmp,  // hdcMemItem에 해당하는 아이템 시트 비트맵 (알파 포함 PNG)
+						destRect,
+						1.0f,
+						D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+						srcRect
+					);
+
 				}
 				// 몸통
 				if (playeritem[1].itemID) {
 					int sx, sy;
 					GetItemTileCoords(playeritem[1].itemID, sx, sy);
-					TransparentBlt(mdc,
-						bodySlot.left, bodySlot.top, 52, 52,
-						hdcMemItem, sx, sy, ITEM_SIZE, ITEM_SIZE,
-						RGB(0, 0, 255));
+					D2D1_RECT_F destRect = D2D1::RectF(
+						static_cast<FLOAT>(bodySlot.left),
+						static_cast<FLOAT>(bodySlot.top),
+						static_cast<FLOAT>(bodySlot.left + 52),
+						static_cast<FLOAT>(bodySlot.top + 52)
+					);
+
+					D2D1_RECT_F srcRect = D2D1::RectF(
+						static_cast<FLOAT>(sx),
+						static_cast<FLOAT>(sy),
+						static_cast<FLOAT>(sx + ITEM_SIZE),
+						static_cast<FLOAT>(sy + ITEM_SIZE)
+					);
+
+					g_pRenderTarget->DrawBitmap(
+						Itembmp,  // hdcMemItem에 해당하는 알파 포함 아이템 시트 비트맵
+						destRect,
+						1.0f,
+						D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+						srcRect
+					);
+
 				}
 				// 신발
 				if (playeritem[2].itemID) {
 					int sx, sy;
 					GetItemTileCoords(playeritem[2].itemID, sx, sy);
-					TransparentBlt(mdc,
-						bootsSlot.left, bootsSlot.top, 52, 52,
-						hdcMemItem, sx, sy, ITEM_SIZE, ITEM_SIZE,
-						RGB(0, 0, 255));
+					D2D1_RECT_F destRect = D2D1::RectF(
+						static_cast<FLOAT>(bootsSlot.left),
+						static_cast<FLOAT>(bootsSlot.top),
+						static_cast<FLOAT>(bootsSlot.left + 52),
+						static_cast<FLOAT>(bootsSlot.top + 52)
+					);
+
+					D2D1_RECT_F srcRect = D2D1::RectF(
+						static_cast<FLOAT>(sx),
+						static_cast<FLOAT>(sy),
+						static_cast<FLOAT>(sx + ITEM_SIZE),
+						static_cast<FLOAT>(sy + ITEM_SIZE)
+					);
+
+					g_pRenderTarget->DrawBitmap(
+						Itembmp,  // hdcMemItem에 해당하는 알파 포함 아이템 시트 비트맵
+						destRect,
+						1.0f,
+						D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+						srcRect
+					);
+
 				}
 				//장신구
 				if (playeritem[3].itemID) {
 					int sx, sy;
 					GetItemTileCoords(playeritem[3].itemID, sx, sy);
-					TransparentBlt(mdc,
-						ringSlot.left, ringSlot.top, 52, 52,
-						hdcMemItem, sx, sy, ITEM_SIZE, ITEM_SIZE,
-						RGB(0, 0, 255));
+					D2D1_RECT_F destRect = D2D1::RectF(
+						static_cast<FLOAT>(ringSlot.left),
+						static_cast<FLOAT>(ringSlot.top),
+						static_cast<FLOAT>(ringSlot.left + 52),
+						static_cast<FLOAT>(ringSlot.top + 52)
+					);
+
+					D2D1_RECT_F srcRect = D2D1::RectF(
+						static_cast<FLOAT>(sx),
+						static_cast<FLOAT>(sy),
+						static_cast<FLOAT>(sx + ITEM_SIZE),
+						static_cast<FLOAT>(sy + ITEM_SIZE)
+					);
+
+					g_pRenderTarget->DrawBitmap(
+						Itembmp,  // hdcMemItem에 해당하는 아이템 시트 비트맵 (알파 PNG)
+						destRect,
+						1.0f,
+						D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+						srcRect
+					);
+
 				}
-				DeleteDC(hdcMemItem);
-				ReleaseDC(NULL, hdcScreen);
+				//DeleteDC(hdcMemItem);
+				//ReleaseDC(NULL, hdcScreen);
 			}
 
 			//(25.06.10) - 김정현
 			//제작대 구현
-			if (show_craft) {
+			/*if (show_craft) {
 				hdcCraftUI = CreateCompatibleDC(NULL);
 				SelectObject(hdcCraftUI, craftUI);
 				TransparentBlt(mdc, centerx - 760 / 2, 50, 760, 547, hdcCraftUI, 0, 0, bmpExp_W, bmpExp_H, RGB(0, 0, 255));
 				DeleteDC(hdcCraftUI);
+			}*/
+			if (show_craft) {
+				D2D1_RECT_F destRect = D2D1::RectF(
+					static_cast<FLOAT>(centerx - 760.0f / 2),
+					50.0f,
+					static_cast<FLOAT>(centerx + 760.0f / 2),
+					50.0f + 547.0f
+				);
+
+				D2D1_RECT_F srcRect = D2D1::RectF(
+					0.0f,
+					0.0f,
+					static_cast<FLOAT>(760),
+					static_cast<FLOAT>(547)
+				);
+
+				g_pRenderTarget->DrawBitmap(
+					craftUI,  // 알파 포함된 UI 비트맵
+					destRect,
+					1.0f,
+					D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+					srcRect
+				);
 			}
 			//요리대 구현
-			if (show_cook) {
+			/*if (show_cook) {
 				hdcCookUI = CreateCompatibleDC(NULL);
 				SelectObject(hdcCookUI, cookUI);
 				TransparentBlt(mdc, centerx - 760 / 2, 50, 760, 547, hdcCookUI, 0, 0, bmpExp_W, bmpExp_H, RGB(0, 0, 255));
 				DeleteDC(hdcCookUI);
+			}*/
+			if (show_cook) {
+				D2D1_RECT_F destRect = D2D1::RectF(
+					static_cast<FLOAT>(centerx - 760.0f / 2),
+					50.0f,
+					static_cast<FLOAT>(centerx + 760.0f / 2),
+					50.0f + 547.0f
+				);
+
+				D2D1_RECT_F srcRect = D2D1::RectF(
+					0.0f,
+					0.0f,
+					static_cast<FLOAT>(760),
+					static_cast<FLOAT>(547)
+				);
+
+				g_pRenderTarget->DrawBitmap(
+					cookUI,  // 알파 채널 포함된 요리 UI 비트맵
+					destRect,
+					1.0f,
+					D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+					srcRect
+				);
+
 			}
 			//요리대 아이템 출력
 			if (show_cook) {
-				HDC itemDC = CreateCompatibleDC(mdc);
-				SelectObject(itemDC, Itembmp);
-				SelectObject(memdc, Numbmp);
-				DrawCookItems(mdc, itemDC, memdc);
-				DeleteDC(itemDC);
+				DrawCookItems();
 			}
+
 			//(25.06.04) - 김정현
 			//인벤 속 아이템 수정,아이템 드래그
 
-			hdcMemItem = CreateCompatibleDC(hdc);
-			SelectObject(hdcMemItem, Itembmp);
+			/*hdcMemItem = CreateCompatibleDC(hdc);
+			SelectObject(hdcMemItem, Itembmp);*/
 
 			if (show_inventory || show_craft || show_cook) {
 				for (int row = 0; row < 3; ++row) {
@@ -2547,7 +3122,29 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 						else
 							drawY = 524;
 
-						TransparentBlt(mdc, drawX, drawY, ITEM_SIZE - 5, ITEM_SIZE - 5, hdcMemItem, sx, sy, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
+						//TransparentBlt(mdc, drawX, drawY, ITEM_SIZE - 5, ITEM_SIZE - 5, hdcMemItem, sx, sy, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
+
+						D2D1_RECT_F destRect = D2D1::RectF(
+							static_cast<FLOAT>(drawX),
+							static_cast<FLOAT>(drawY),
+							static_cast<FLOAT>(drawX + ITEM_SIZE - 5),
+							static_cast<FLOAT>(drawY + ITEM_SIZE - 5)
+						);
+
+						D2D1_RECT_F srcRect = D2D1::RectF(
+							static_cast<FLOAT>(sx),
+							static_cast<FLOAT>(sy),
+							static_cast<FLOAT>(sx + ITEM_SIZE),
+							static_cast<FLOAT>(sy + ITEM_SIZE)
+						);
+
+						g_pRenderTarget->DrawBitmap(
+							Itembmp,  // 알파 포함 아이템 시트 비트맵 (hdcMemItem에 해당)
+							destRect,
+							1.0f,
+							D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+							srcRect
+						);
 
 						//아이템 개수 비트맵
 						if (itemCnt > 1) {
@@ -2555,11 +3152,33 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 							if (cnt < 1) cnt = 1;
 							if (cnt > 10) cnt = 10;
 
-							int sx, sy;
-							GetNumberTileCoords(cnt, sx, sy);
+							int sxNum, syNum;
+							GetNumberTileCoords(cnt, sxNum, syNum);
 
-							SelectObject(memdc, Numbmp);
-							TransparentBlt(mdc, drawX + 3, drawY + 3, ITEM_SIZE, ITEM_SIZE, memdc, sx, sy, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
+							/*SelectObject(memdc, Numbmp);
+							TransparentBlt(mdc, drawX + 3, drawY + 3, ITEM_SIZE, ITEM_SIZE, memdc, sx, sy, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));*/
+
+							D2D1_RECT_F destRect = D2D1::RectF(
+								static_cast<FLOAT>(drawX + 5),
+								static_cast<FLOAT>(drawY + 5),
+								static_cast<FLOAT>(drawX + 5 + ITEM_SIZE - 5),
+								static_cast<FLOAT>(drawY + 5 + ITEM_SIZE - 5)
+							);
+
+							D2D1_RECT_F srcRect = D2D1::RectF(
+								static_cast<FLOAT>(sxNum),
+								static_cast<FLOAT>(syNum),
+								static_cast<FLOAT>(sxNum + ITEM_SIZE),
+								static_cast<FLOAT>(syNum + ITEM_SIZE)
+							);
+
+							g_pRenderTarget->DrawBitmap(
+								Numbmp,  // hdcMemNumber에 해당하는 숫자 오버레이 비트맵
+								destRect,
+								1.0f,
+								D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+								srcRect
+							);
 						}
 					}
 				}
@@ -2585,7 +3204,29 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 					int drawX = (centerx - 760 / 2 + 89) + (59 * col);
 					int drawY = clientRect.bottom - 95 + 35;
 
-					TransparentBlt(mdc, drawX, drawY, ITEM_SIZE, ITEM_SIZE, hdcMemItem, sx, sy, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
+					//TransparentBlt(mdc, drawX, drawY, ITEM_SIZE, ITEM_SIZE, hdcMemItem, sx, sy, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
+
+					D2D1_RECT_F destRect = D2D1::RectF(
+						static_cast<FLOAT>(drawX),
+						static_cast<FLOAT>(drawY),
+						static_cast<FLOAT>(drawX + ITEM_SIZE),
+						static_cast<FLOAT>(drawY + ITEM_SIZE)
+					);
+
+					D2D1_RECT_F srcRect = D2D1::RectF(
+						static_cast<FLOAT>(sx),
+						static_cast<FLOAT>(sy),
+						static_cast<FLOAT>(sx + ITEM_SIZE),
+						static_cast<FLOAT>(sy + ITEM_SIZE)
+					);
+
+					g_pRenderTarget->DrawBitmap(
+						Itembmp,  // hdcMemItem에 해당하는 아이템 시트 비트맵 (알파 포함 PNG)
+						destRect,
+						1.0f,
+						D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+						srcRect
+					);
 
 					//아이템 개수 비트맵
 					if (itemCnt > 1) {
@@ -2596,8 +3237,30 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 						int sx, sy;
 						GetNumberTileCoords(cnt, sx, sy);
 
-						SelectObject(memdc, Numbmp);
-						TransparentBlt(mdc, drawX + 3, drawY + 3, ITEM_SIZE, ITEM_SIZE, memdc, sx, sy, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
+						D2D1_RECT_F destRect = D2D1::RectF(
+							static_cast<FLOAT>(drawX + 5),
+							static_cast<FLOAT>(drawY + 5),
+							static_cast<FLOAT>(drawX + 5 + ITEM_SIZE),
+							static_cast<FLOAT>(drawY + 5 + ITEM_SIZE)
+						);
+
+						D2D1_RECT_F srcRect = D2D1::RectF(
+							static_cast<FLOAT>(sx),
+							static_cast<FLOAT>(sy),
+							static_cast<FLOAT>(sx + ITEM_SIZE),
+							static_cast<FLOAT>(sy + ITEM_SIZE)
+						);
+
+						g_pRenderTarget->DrawBitmap(
+							Numbmp,  // hdcMemNumber에 해당하는 숫자 또는 아이콘 시트 비트맵
+							destRect,
+							1.0f,
+							D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+							srcRect
+						);
+
+						/*SelectObject(memdc, Numbmp);
+						TransparentBlt(mdc, drawX + 3, drawY + 3, ITEM_SIZE, ITEM_SIZE, memdc, sx, sy, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));*/
 					}
 				}
 			}
@@ -2605,6 +3268,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			//(25.06.10) - 김정현
 			//인벤토리 제작칸 구현 + 설명창
 			int craftingItems[2][3] = { {11, 12, 91},{63, 64, 92} };
+			//if (show_inventory) {
+			//	for (int j = 0; j < 2; ++j) {
+			//		for (int i = 0; i < 3; ++i) {
+			//
+			//			int x = centerx - 760 / 2 + 86 + (63 * i);
+			//			int y = 50 + 182 + (63 * j);
+			//
+			//			int sx, sy;
+			//			if (dragInCrafting && dragCraftingX == (i + j * 3)) {
+			//				GetItemTileCoords(dragCraftingItem.itemID, sx, sy);
+			//				TransparentBlt(mdc, dragMouseX - ITEM_SIZE / 2, dragMouseY - ITEM_SIZE / 2, ITEM_SIZE, ITEM_SIZE, hdcMemItem, sx, sy, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
+			//			}
+			//		}
+			//	}
+			//} //(25.06.10) - 김정현
 			if (show_inventory) {
 				for (int j = 0; j < 2; ++j) {
 					for (int i = 0; i < 3; ++i) {
@@ -2615,13 +3293,34 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 						int sx, sy;
 						if (dragInCrafting && dragCraftingX == (i + j * 3)) {
 							GetItemTileCoords(dragCraftingItem.itemID, sx, sy);
-							TransparentBlt(mdc, dragMouseX - ITEM_SIZE / 2, dragMouseY - ITEM_SIZE / 2, ITEM_SIZE, ITEM_SIZE, hdcMemItem, sx, sy, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
+							D2D1_RECT_F destRect = D2D1::RectF(
+								static_cast<FLOAT>(dragMouseX - ITEM_SIZE / 2),
+								static_cast<FLOAT>(dragMouseY - ITEM_SIZE / 2),
+								static_cast<FLOAT>(dragMouseX + ITEM_SIZE / 2),
+								static_cast<FLOAT>(dragMouseY + ITEM_SIZE / 2)
+							);
+
+							D2D1_RECT_F srcRect = D2D1::RectF(
+								static_cast<FLOAT>(sx),
+								static_cast<FLOAT>(sy),
+								static_cast<FLOAT>(sx + ITEM_SIZE),
+								static_cast<FLOAT>(sy + ITEM_SIZE)
+							);
+
+							g_pRenderTarget->DrawBitmap(
+								Itembmp,  // hdcMemItem에 해당하는 아이템 시트 비트맵 (알파 포함 PNG)
+								destRect,
+								1.0f,
+								D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+								srcRect
+							);
+
 						}
 					}
 				}
 			} //(25.06.10) - 김정현
 			//제작대 제작칸 드래그
-			else if (show_craft) {
+			/*else if (show_craft) {
 				for (int j = 0; j < 2; ++j) {
 					for (int i = 0; i < 6; ++i) {
 						int x = centerx - 760 / 2 + 191 + (63 * i);
@@ -2634,9 +3333,44 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 						}
 					}
 				}
+			}*/
+			else if (show_craft) {
+				for (int j = 0; j < 2; ++j) {
+					for (int i = 0; i < 6; ++i) {
+						int x = centerx - 760 / 2 + 191 + (63 * i);
+						int y = 50 + 147 + (63 * j);
+
+						int sx, sy;
+						if (dragInCrafting && dragCraftingX == (i + j * 6)) {
+							GetItemTileCoords(dragCraftingItem.itemID, sx, sy);
+							D2D1_RECT_F destRect = D2D1::RectF(
+								static_cast<FLOAT>(dragMouseX - ITEM_SIZE / 2),
+								static_cast<FLOAT>(dragMouseY - ITEM_SIZE / 2),
+								static_cast<FLOAT>(dragMouseX + ITEM_SIZE / 2),
+								static_cast<FLOAT>(dragMouseY + ITEM_SIZE / 2)
+							);
+
+							D2D1_RECT_F srcRect = D2D1::RectF(
+								static_cast<FLOAT>(sx),
+								static_cast<FLOAT>(sy),
+								static_cast<FLOAT>(sx + ITEM_SIZE),
+								static_cast<FLOAT>(sy + ITEM_SIZE)
+							);
+
+							g_pRenderTarget->DrawBitmap(
+								Itembmp,  // hdcMemItem에 해당하는 아이템 시트 비트맵 (알파 포함 PNG)
+								destRect,
+								1.0f,
+								D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+								srcRect
+							);
+
+						}
+					}
+				}
 			}
 
-			if ((show_inventory) && !drag) {
+			/*if ((show_inventory) && !drag) {
 				for (int j = 0; j < 2; ++j) {
 					for (int i = 0; i < 3; ++i) {
 						int x = centerx - 760 / 2 + 87 + (58 * i) + 5 * i;
@@ -2652,10 +3386,60 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 						}
 					}
 				}
+			}*/
+			if ((show_inventory) && !drag) {
+				for (int j = 0; j < 2; ++j) {
+					for (int i = 0; i < 3; ++i) {
+						int x = centerx - 760 / 2 + 87 + (58 * i) + 5 * i;
+						int y = 50 + 182 + (58 * j) + 5 * j;
+						RECT craftingSlot = { x, y, x + 58, y + 58 };
+
+						POINT pt = { mouseX, mouseY };
+						if (PtInRect(&craftingSlot, pt) && production[j * 3 + i].itemID != 0) {
+							D2D1_RECT_F destRect = D2D1::RectF(
+								static_cast<FLOAT>(mouseX),
+								static_cast<FLOAT>(mouseY - 106),
+								static_cast<FLOAT>(mouseX + 154),
+								static_cast<FLOAT>(mouseY)
+							);
+
+							D2D1_RECT_F srcRectBG = D2D1::RectF(0.0f, 0.0f, 154.0f, 106.0f);
+
+							g_pRenderTarget->DrawBitmap(
+								itemDescBmp,     // 아이템 설명 전체 비트맵 (알파 포함 PNG)
+								destRect,
+								1.0f,
+								D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+								srcRectBG
+							);
+
+							int sx = (production[j * 3 + i].itemID % 10 - 1) * 154;
+							int sy = (production[j * 3 + i].itemID / 10 + 1) * 106;
+
+							D2D1_RECT_F srcRectContent = D2D1::RectF(
+								static_cast<FLOAT>(sx),
+								static_cast<FLOAT>(sy),
+								static_cast<FLOAT>(sx + 154),
+								static_cast<FLOAT>(sy + 106)
+							);
+
+							g_pRenderTarget->DrawBitmap(
+								itemDescBmp,
+								destRect,
+								1.0f,
+								D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+								srcRectContent
+							);
+							InvalidateRect(hWnd, NULL, FALSE);
+							break;
+						}
+					}
+				}
 			}
+			
 			//25.06.10 - 김정현
 			//제작대 제작칸 설명창
-			if ((show_craft) && !drag) {
+			/*if ((show_craft) && !drag) {
 				for (int j = 0; j < 2; ++j) {
 					for (int i = 0; i < 6; ++i) {
 						int x = centerx - 760 / 2 + 191 + (58 * i) + 5 * i;
@@ -2671,9 +3455,59 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 						}
 					}
 				}
+			}*/
+			if ((show_craft) && !drag) {
+				for (int j = 0; j < 2; ++j) {
+					for (int i = 0; i < 6; ++i) {
+						int x = centerx - 760 / 2 + 191 + (58 * i) + 5 * i;
+						int y = 50 + 147 + (58 * j) + 5 * j;
+						RECT craftingSlot = { x, y, x + 58, y + 58 };
+
+						POINT pt = { mouseX, mouseY };
+						if (PtInRect(&craftingSlot, pt) && productitem[j * 6 + i].itemID != 0) {
+							D2D1_RECT_F destRect = D2D1::RectF(
+								static_cast<FLOAT>(mouseX),
+								static_cast<FLOAT>(mouseY - 106),
+								static_cast<FLOAT>(mouseX + 154),
+								static_cast<FLOAT>(mouseY)
+							);
+
+							D2D1_RECT_F srcRectBG = D2D1::RectF(
+								0.0f, 0.0f, 154.0f, 106.0f
+							);
+
+							g_pRenderTarget->DrawBitmap(
+								itemDescBmp,   // 알파 포함된 전체 설명 시트 PNG
+								destRect,
+								1.0f,
+								D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+								srcRectBG
+							);
+							int sx = (productitem[j * 6 + i].itemID % 10 - 1) * 154;
+							int sy = (productitem[j * 6 + i].itemID / 10 + 1) * 106;
+
+							D2D1_RECT_F srcRectContent = D2D1::RectF(
+								static_cast<FLOAT>(sx),
+								static_cast<FLOAT>(sy),
+								static_cast<FLOAT>(sx + 154),
+								static_cast<FLOAT>(sy + 106)
+							);
+
+							g_pRenderTarget->DrawBitmap(
+								itemDescBmp,   // 같은 비트맵에서 원하는 설명 부분만 잘라서 출력
+								destRect,
+								1.0f,
+								D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+								srcRectContent
+							);
+							InvalidateRect(hWnd, NULL, FALSE);
+							break;
+						}
+					}
+				}
 			}
 
-			if (drag) {
+			/*if (drag) {
 				int dragID = drag_item.itemID;
 				if (dragID != 0) {
 					int sx, sy;
@@ -2684,13 +3518,44 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
 					TransparentBlt(mdc, dragX, dragY, ITEM_SIZE, ITEM_SIZE, hdcMemItem, sx, sy, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
 				}
+			}*/
+			if (drag) {
+				int dragID = drag_item.itemID;
+				if (dragID != 0) {
+					int sx, sy;
+					GetItemTileCoords(dragID, sx, sy);
+
+					int dragX = dragMouseX - ITEM_SIZE / 2;
+					int dragY = dragMouseY - ITEM_SIZE / 2;
+
+					D2D1_RECT_F destRect = D2D1::RectF(
+						static_cast<FLOAT>(dragX),
+						static_cast<FLOAT>(dragY),
+						static_cast<FLOAT>(dragX + ITEM_SIZE),
+						static_cast<FLOAT>(dragY + ITEM_SIZE)
+					);
+
+					D2D1_RECT_F srcRect = D2D1::RectF(
+						static_cast<FLOAT>(sx),
+						static_cast<FLOAT>(sy),
+						static_cast<FLOAT>(sx + ITEM_SIZE),
+						static_cast<FLOAT>(sy + ITEM_SIZE)
+					);
+
+					g_pRenderTarget->DrawBitmap(
+						Itembmp,  // hdcMemItem에 해당하는 아이템 시트 비트맵 (알파 PNG)
+						destRect,
+						1.0f,
+						D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+						srcRect
+					);
+				}
 			}
 
-
-			DeleteDC(hdcMemItem);
+			//DeleteDC(hdcMemItem);
 
 			//숫자가 아이템 위로 오도록
-			if (show_inventory || show_cook || show_craft) {
+		/*	if (show_inventory || show_cook || show_craft) {
 				TransparentBlt(mdc, centerx - 760 / 2, 50, 760, 547, hdcNum, 0, 0, bmpExp_W, bmpExp_H, RGB(0, 0, 255));
 				TransparentBlt(mdc, (centerx - 760 / 2 + 89) + 59 * (InvenSelec_Nor - 1), 389, 52, 53, hdcselec, 0, 0, 52, 53, RGB(0, 0, 255));
 
@@ -2698,10 +3563,95 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			else {
 				TransparentBlt(mdc, centerx - 760 / 2, clientRect.bottom - 95, 760, 95, hdcNum, 0, 0, bmpNor_W, bmpNor_H, RGB(0, 0, 255));
 				TransparentBlt(mdc, (centerx - 760 / 2 + 89) + 59 * (InvenSelec_Nor - 1), clientRect.bottom - 95 + 35, 52, 53, hdcselec, 0, 0, 52, 53, RGB(0, 0, 255));
+			}*/
+			if (show_inventory || show_cook || show_craft) {
+				D2D1_RECT_F destRect1 = D2D1::RectF(
+					static_cast<FLOAT>(centerx - 760.0f / 2),
+					50.0f,
+					static_cast<FLOAT>(centerx + 760.0f / 2),
+					50.0f + 547.0f
+				);
+
+				D2D1_RECT_F srcRect1 = D2D1::RectF(
+					0.0f,
+					0.0f,
+					static_cast<FLOAT>(760),
+					static_cast<FLOAT>(547)
+				);
+
+				g_pRenderTarget->DrawBitmap(
+					InvenExpandednum,  // 알파 포함된 비트맵 (ex: 숫자 배경)
+					destRect1,
+					1.0f,
+					D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+					srcRect1
+				);
+
+				D2D1_RECT_F destRect2 = D2D1::RectF(
+					static_cast<FLOAT>((centerx - 760.0f / 2 + 89) + 59 * (InvenSelec_Nor - 1)),
+					389.0f,
+					static_cast<FLOAT>((centerx - 760.0f / 2 + 89) + 59 * (InvenSelec_Nor - 1) + 52),
+					389.0f + 53.0f
+				);
+
+				D2D1_RECT_F srcRect2 = D2D1::RectF(
+					0.0f,
+					0.0f,
+					52.0f,
+					53.0f
+				);
+
+				g_pRenderTarget->DrawBitmap(
+					SelecInven_Ex,  // 알파 포함된 선택 강조 비트맵
+					destRect2,
+					1.0f,
+					D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+					srcRect2
+				);
+			}
+			else {
+				D2D1_RECT_F destRect1 = D2D1::RectF(
+					static_cast<FLOAT>(centerx - 760.0f / 2),
+					static_cast<FLOAT>(clientRect.bottom - 95),
+					static_cast<FLOAT>(centerx + 760.0f / 2),
+					static_cast<FLOAT>(clientRect.bottom)
+				);
+
+				D2D1_RECT_F srcRect1 = D2D1::RectF(
+					0.0f,
+					0.0f,
+					static_cast<FLOAT>(760),
+					static_cast<FLOAT>(95)
+				);
+
+				g_pRenderTarget->DrawBitmap(
+					InvenNormalnum,  // 알파 포함된 하단 바 비트맵
+					destRect1,
+					1.0f,
+					D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+					srcRect1
+				);
+
+				D2D1_RECT_F destRect2 = D2D1::RectF(
+					static_cast<FLOAT>((centerx - 760.0f / 2 + 89) + 59 * (InvenSelec_Nor - 1)),
+					static_cast<FLOAT>(clientRect.bottom - 95 + 35),
+					static_cast<FLOAT>((centerx - 760.0f / 2 + 89) + 59 * (InvenSelec_Nor - 1) + 52),
+					static_cast<FLOAT>(clientRect.bottom - 95 + 35 + 53)
+				);
+
+				D2D1_RECT_F srcRect2 = D2D1::RectF(0.0f, 0.0f, 52.0f, 53.0f);
+
+				g_pRenderTarget->DrawBitmap(
+					SelecInven_Nor,  // 알파 포함된 선택 강조 테두리 비트맵
+					destRect2,
+					1.0f,
+					D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+					srcRect2
+				);
 			}
 			//(25.06.09) - 김정현
 			//인벤 아이템 설명창(완료)
-			if ((show_inventory || show_cook || show_craft) && !drag) {
+			/*if ((show_inventory || show_cook || show_craft) && !drag) {
 				for (int row = 0; row < 3; ++row) {
 					for (int col = 0; col < 10; ++col) {
 						int slotX = (centerx - 760 / 2 + 89) + (59 * col);
@@ -2715,11 +3665,56 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 						}
 					}
 				}
+			}*/
+			if ((show_inventory || show_cook || show_craft) && !drag) {
+				for (int row = 0; row < 3; ++row) {
+					for (int col = 0; col < 10; ++col) {
+						int slotX = (centerx - 760 / 2 + 89) + (59 * col);
+						int slotY = (row == 0) ? 395 : (row == 1) ? 465 : 524;
+						RECT slotRect = { slotX, slotY, slotX + 52, slotY + 52 };
+
+						POINT pt = { mouseX, mouseY };
+						if (PtInRect(&slotRect, pt) && inventory[row][col].itemID != 0) {
+							D2D1_RECT_F destRect = D2D1::RectF(
+								static_cast<FLOAT>(mouseX),
+								static_cast<FLOAT>(mouseY - 106),
+								static_cast<FLOAT>(mouseX + 154),
+								static_cast<FLOAT>(mouseY)
+							);
+
+							D2D1_RECT_F srcRectBG = D2D1::RectF(0.0f, 0.0f, 154.0f, 106.0f);
+
+							g_pRenderTarget->DrawBitmap(
+								itemDescBmp,  // 전체 설명창 비트맵 (알파 포함 PNG)
+								destRect,
+								1.0f,
+								D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+								srcRectBG
+							);
+							int sx = (inventory[row][col].itemID % 10 - 1) * 154;
+							int sy = (inventory[row][col].itemID / 10 + 1) * 106;
+
+							D2D1_RECT_F srcRectContent = D2D1::RectF(
+								static_cast<FLOAT>(sx),
+								static_cast<FLOAT>(sy),
+								static_cast<FLOAT>(sx + 154),
+								static_cast<FLOAT>(sy + 106)
+							);
+
+							g_pRenderTarget->DrawBitmap(
+								itemDescBmp,
+								destRect,  // 배경과 동일한 위치에 출력
+								1.0f,
+								D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+								srcRectContent
+							);
+						}
+					}
+				}
 			}
 
-
 			//2506103 도전과제 완료(변수만 조정하면 됨)
-			if (show_pclick) {
+			/*if (show_pclick) {
 				SelectObject(memdc, pclick[0]);
 				TransparentBlt(mdc, centerx - 461 / 2, centery - 573 / 2, 461, 573, memdc, 0, 0, 461, 573, RGB(0, 0, 255));
 
@@ -2730,10 +3725,46 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 					}
 				}
 
+			}*/
+			if (show_pclick) {
+				SelectObject(memdc, pclick[0]);
+				TransparentBlt(mdc, centerx - 461 / 2, centery - 573 / 2, 461, 573, memdc, 0, 0, 461, 573, RGB(0, 0, 255));
+				D2D1_RECT_F destRect = D2D1::RectF(
+					static_cast<FLOAT>(centerx - 461.0f / 2),
+					static_cast<FLOAT>(centery - 573.0f / 2),
+					static_cast<FLOAT>(centerx + 461.0f / 2),
+					static_cast<FLOAT>(centery + 573.0f / 2)
+				);
+				D2D1_RECT_F srcRect = D2D1::RectF(0, 0, 461, 573);
+				g_pRenderTarget->DrawBitmap(pclick[0], destRect, 1.0f,
+					D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR, srcRect);
+
+
+				for (int i{}; i < 6; i++) {
+					if (challenge[i]) {
+						D2D1_RECT_F destRect = D2D1::RectF(
+							static_cast<FLOAT>(centerx - 461.0f / 2),
+							static_cast<FLOAT>(centery - 573.0f / 2 + 170 + 52 * i),
+							static_cast<FLOAT>(centerx + 461.0f / 2),
+							static_cast<FLOAT>(centery - 573.0f / 2 + 170 + 52 * i + 43)
+						);
+
+						D2D1_RECT_F srcRect = D2D1::RectF(0.0f, 0.0f, 461.0f, 43.0f);
+
+						g_pRenderTarget->DrawBitmap(
+							pclick[1],       // 알파 포함 비트맵 (e.g., PNG)
+							destRect,
+							1.0f,
+							D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+							srcRect
+						);
+					}
+				}
+
 			}
 
 			//2506105
-			if (game_end_flag) {
+			/*if (game_end_flag) {
 
 				//여기다가엔딩
 				SelectObject(memdc, endscreen);
@@ -2750,18 +3781,79 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 				TextOut(mdc, centerx + 60 + 10, centery - 110 + 73, txt, lstrlen(txt));
 				wsprintf(txt, TEXT("%d점"), score);
 				TextOut(mdc, centerx + 50, centery + 52, txt, lstrlen(txt));
+			}*/
+			if (game_end_flag) {
+
+				//여기다가엔딩
+				D2D1_RECT_F destRect = D2D1::RectF(
+					static_cast<FLOAT>(centerx - 461.0f / 2),
+					static_cast<FLOAT>(centery - 573.0f / 2),
+					static_cast<FLOAT>(centerx + 461.0f / 2),
+					static_cast<FLOAT>(centery + 573.0f / 2)
+				);
+				D2D1_RECT_F srcRect = D2D1::RectF(0, 0, 461, 573);
+				g_pRenderTarget->DrawBitmap(endscreen, destRect, 1.0f,
+					D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR, srcRect);
+
+				SetBkMode(mdc, TRANSPARENT);
+				int score = 100'000 + 1'000 * monster_cnt - 5'000 * dead_cnt - (min * 60 + sec);
+
+				wsprintf(txt, TEXT("%d분 %d초"), min, sec);
+				TextOut(mdc, centerx + 60, centery - 110, txt, lstrlen(txt));
+				wsprintf(txt, TEXT("%d마리"), monster_cnt);
+				TextOut(mdc, centerx + 60 + 5, centery - 110 + 35, txt, lstrlen(txt));
+				wsprintf(txt, TEXT("%d회"), dead_cnt);
+				TextOut(mdc, centerx + 60 + 10, centery - 110 + 73, txt, lstrlen(txt));
+				wsprintf(txt, TEXT("%d점"), score);
+				TextOut(mdc, centerx + 50, centery + 52, txt, lstrlen(txt));
 			}
 
-			SelectObject(memdc, pclick[2]);
-			TransparentBlt(mdc, clientRect.right - 150, clientRect.bottom - 73, 150, 73, memdc, 0, 0, 150, 73, RGB(0, 0, 255));
+			/*SelectObject(memdc, pclick[2]);
+			TransparentBlt(mdc, clientRect.right - 150, clientRect.bottom - 73, 150, 73, memdc, 0, 0, 150, 73, RGB(0, 0, 255));*/
+
+			D2D1_RECT_F destRect = D2D1::RectF(
+				static_cast<FLOAT>(clientRect.right - 150),
+				static_cast<FLOAT>(clientRect.bottom - 73),
+				static_cast<FLOAT>(clientRect.right),
+				static_cast<FLOAT>(clientRect.bottom)
+			);
+
+			D2D1_RECT_F srcRect = D2D1::RectF(0.0f, 0.0f, 150.0f, 73.0f);
+
+			g_pRenderTarget->DrawBitmap(
+				pclick[2],  // 알파 포함된 비트맵
+				destRect,
+				1.0f,
+				D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+				srcRect
+			);
 
 			if (p.died_flag) {
-				SelectObject(memdc, player_died);
-				TransparentBlt(mdc, centerx - 599 / 2, centery - 249 / 2, 599, 249, memdc, 0, 0, 599, 249, RGB(0, 0, 255));
+				/*SelectObject(memdc, player_died);
+				TransparentBlt(mdc, centerx - 599 / 2, centery - 249 / 2, 599, 249, memdc, 0, 0, 599, 249, RGB(0, 0, 255));*/
+
+				D2D1_RECT_F destRect = D2D1::RectF(
+					static_cast<FLOAT>(centerx - 599.0f / 2),
+					static_cast<FLOAT>(centery - 249.0f / 2),
+					static_cast<FLOAT>(centerx + 599.0f / 2),
+					static_cast<FLOAT>(centery + 249.0f / 2)
+				);
+
+				D2D1_RECT_F srcRect = D2D1::RectF(0.0f, 0.0f, 599.0f, 249.0f);
+
+				g_pRenderTarget->DrawBitmap(
+					player_died,   // 알파 채널 포함된 비트맵
+					destRect,
+					1.0f,
+					D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+					srcRect
+				);
 			}
 		}
 
-		BitBlt(hdc, 0, 0, clientRect.right, clientRect.bottom, mdc, 0, 0, SRCCOPY);
+		//BitBlt(hdc, 0, 0, clientRect.right, clientRect.bottom, mdc, 0, 0, SRCCOPY);
+
+		g_pRenderTarget->EndDraw();
 
 		DeleteDC(memdc);
 		DeleteDC(memdc2);
@@ -2772,13 +3864,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		break;
 	}
 	case WM_DESTROY:
-		CleanupInvBitmaps();
-		CleanupItemBitmaps();
-		CleanupPlayerSprite();
-		CleanupBossSprite();
-		DeleteDC(ArrowDC);
-		DeleteObject(arrowBmp);
-		
+		CleanupDirect2D();
+		if (g_WallBitmap) g_WallBitmap->Release();
+		if (g_pWICFactory) g_pWICFactory->Release();
+		for (int i{}; i < 3; i++)
+			ground[i]->Release();
+		if (water) water->Release();
+		if (mainscreen) mainscreen->Release();
+		if (endscreen) endscreen->Release();
+		CoUninitialize();
+
+		//CleanupPlayerSprite();
+		//CleanupBossSprite();
+		//DeleteObject(arrowBmp);
+		ReleaseD2DBitmaps();
+
 		PostQuitMessage(0);
 		return 0;
 	}

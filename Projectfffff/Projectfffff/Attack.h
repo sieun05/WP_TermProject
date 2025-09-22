@@ -242,8 +242,8 @@ struct Arrow {
 };
 
 extern vector<Arrow> arrow;
-extern HBITMAP arrowBmp;
-extern HDC ArrowDC;
+//extern HBITMAP arrowBmp;
+//extern HDC ArrowDC;
 inline void ShootArrow(int pX, int pY, Direction dir) {
     Arrow a;
     a.x = pX; a.y = pY;
@@ -323,8 +323,8 @@ inline void UpdateArrows(Monster* monsterList, int monsterCount) {
     }
 }
 
-inline void DrawArrows(HDC mdc, int bx, int by) {
-    if (!ArrowDC) return;
+inline void DrawArrows(int bx, int by) {
+    //if (!ArrowDC) return;
     const int SPR_W = 60;
     const int SPR_H = 60;
 
@@ -347,7 +347,27 @@ inline void DrawArrows(HDC mdc, int bx, int by) {
         case DIR_UP_RIGHT:   col = 3; row = 1; break;
         }
 
-        TransparentBlt(mdc, dx - SPR_W / 2, dy - SPR_H / 2, SPR_W, SPR_H, ArrowDC, col * SPR_W, row * SPR_H, SPR_W, SPR_H, RGB(0, 0, 255));
+        D2D1_RECT_F destRect = D2D1::RectF(
+            static_cast<FLOAT>(dx - SPR_W / 2),
+            static_cast<FLOAT>(dy - SPR_H / 2),
+            static_cast<FLOAT>(dx + SPR_W / 2),
+            static_cast<FLOAT>(dy + SPR_H / 2)
+        );
+
+        D2D1_RECT_F srcRect = D2D1::RectF(
+            static_cast<FLOAT>(col * SPR_W),
+            static_cast<FLOAT>(row * SPR_H),
+            static_cast<FLOAT>((col + 1) * SPR_W),
+            static_cast<FLOAT>((row + 1) * SPR_H)
+        );
+
+        g_pRenderTarget->DrawBitmap(
+            arrowBmp,  // 알파 채널 포함된 화살 스프라이트 시트
+            destRect,
+            1.0f,
+            D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+            srcRect
+        );
     }
 }
 
@@ -361,11 +381,11 @@ struct Magic {
     bool active;
 };
 extern vector<Magic> magics;
-extern HBITMAP fireBmp;
+//extern HBITMAP fireBmp;
 
 extern bool    useWaterEffect;
-extern HDC     FireDC;
-extern HDC     waterEffectDC;
+//extern HDC     FireDC;
+//extern HDC     waterEffectDC;
 
 
 inline void ShootMagic(int pX, int pY, Direction dir) {
@@ -416,13 +436,12 @@ inline void UpdateMagics(Monster* monsterList, int monsterCount) {
         magics.end());
 }
 
-inline void DrawMagics(HDC mdc, int bx, int by) {
+inline void DrawMagics(int bx, int by) {
     DWORD now = GetTickCount64();
-    HDC magicDC = useWaterEffect ? waterEffectDC : FireDC;
     constexpr int WATER_FRAME_COUNT = 2;
     int waterFrame = (now / 200) % WATER_FRAME_COUNT;
 
-    if (!FireDC) return;
+    //if (!FireDC) return;
     const int SPR_W = 60;
     const int SPR_H = 60;
     for (auto& m : magics) {
@@ -443,13 +462,56 @@ inline void DrawMagics(HDC mdc, int bx, int by) {
         int dx = int(m.x) - bx;
         int dy = int(m.y) - by;
         if (useWaterEffect) {
-            TransparentBlt(mdc, dx - SPR_W / 2, dy - SPR_H / 2, SPR_W, SPR_H, magicDC, waterFrame * SPR_W, 0, SPR_W, SPR_H, RGB(0, 0, 255));
+            D2D1_RECT_F destRect = D2D1::RectF(
+                static_cast<FLOAT>(dx - SPR_W / 2),
+                static_cast<FLOAT>(dy - SPR_H / 2),
+                static_cast<FLOAT>(dx + SPR_W / 2),
+                static_cast<FLOAT>(dy + SPR_H / 2)
+            );
+
+            D2D1_RECT_F srcRect = D2D1::RectF(
+                static_cast<FLOAT>(waterFrame * SPR_W),
+                0.0f,
+                static_cast<FLOAT>((waterFrame + 1) * SPR_W),
+                static_cast<FLOAT>(SPR_H)
+            );
+
+            g_pRenderTarget->DrawBitmap(
+                waterEffectBmp,  // 알파 채널 포함된 물 마법 이펙트 스프라이트
+                destRect,
+                1.0f,
+                D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+                srcRect
+            );
+
         }
         else {
-            TransparentBlt(mdc, dx - SPR_W / 2, dy - SPR_H / 2, SPR_W, SPR_H, magicDC, frame * SPR_W, row * SPR_H, SPR_W, SPR_H, RGB(0, 0, 255));
+            D2D1_RECT_F destRect = D2D1::RectF(
+                static_cast<FLOAT>(dx - SPR_W / 2),
+                static_cast<FLOAT>(dy - SPR_H / 2),
+                static_cast<FLOAT>(dx + SPR_W / 2),
+                static_cast<FLOAT>(dy + SPR_H / 2)
+            );
+
+            D2D1_RECT_F srcRect = D2D1::RectF(
+                static_cast<FLOAT>(frame * SPR_W),
+                static_cast<FLOAT>(row * SPR_H),
+                static_cast<FLOAT>((frame + 1) * SPR_W),
+                static_cast<FLOAT>((row + 1) * SPR_H)
+            );
+
+            g_pRenderTarget->DrawBitmap(
+                fireBmp,  // 알파 채널 포함된 마법 이펙트 비트맵 (불/얼음/전기 등)
+                destRect,
+                1.0f,
+                D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+                srcRect
+            );
+
         }
     }
 }
+
 
 //250914
 void CheckBossHit(Boss& boss, Player& p, int bx, int by, Direction playerDirection, DWORD currentTime, bool& boss_flag, int itemID) {

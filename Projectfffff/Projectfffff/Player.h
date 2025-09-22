@@ -1,6 +1,7 @@
 #pragma once
 #include "Cell.h"
 #include "Direction.h"
+#include "Direct2D_Player_Render.h"
 
 extern int bx, by;
 
@@ -59,33 +60,33 @@ static constexpr int PLAYER_SPRITE_FRAMES = 4;   // 프레임 수
 //캐릭터 크기 조정 변수 추가
 static constexpr int PLAYER_SIZE = 80;
 
-extern HBITMAP PlayerBmp;
+//extern HBITMAP PlayerBmp;
 extern HDC PlayerDC;
 extern int PlayerBmpWidth;
 extern int PlayerBmpHeight;
 
-inline bool InitPlayerSprite(HINSTANCE hInst) {
-
-	PlayerBmp = (HBITMAP)LoadImage(nullptr,L"비트맵\\플레이어\\1.bmp",IMAGE_BITMAP, 0, 0,LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-	if (!PlayerBmp) 
-		return false;
-	PlayerDC = CreateCompatibleDC(nullptr);
-	SelectObject(PlayerDC, PlayerBmp);
-
-	BITMAP bm{};
-	GetObject(PlayerBmp, sizeof(bm), &bm);
-	PlayerBmpWidth = bm.bmWidth;
-	PlayerBmpHeight = bm.bmHeight;
-
-	return true;
-}
-
-inline void CleanupPlayerSprite() {
-	if (PlayerDC)
-		DeleteDC(PlayerDC);
-	if (PlayerBmp)
-		DeleteObject(PlayerBmp);
-}
+//inline bool InitPlayerSprite(HINSTANCE hInst) {
+//
+//	PlayerBmp = (HBITMAP)LoadImage(nullptr,L"비트맵\\플레이어\\1.bmp",IMAGE_BITMAP, 0, 0,LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+//	if (!PlayerBmp) 
+//		return false;
+//	PlayerDC = CreateCompatibleDC(nullptr);
+//	SelectObject(PlayerDC, PlayerBmp);
+//
+//	BITMAP bm{};
+//	GetObject(PlayerBmp, sizeof(bm), &bm);
+//	PlayerBmpWidth = bm.bmWidth;
+//	PlayerBmpHeight = bm.bmHeight;
+//
+//	return true;
+//}
+//
+//inline void CleanupPlayerSprite() {
+//	if (PlayerDC)
+//		DeleteDC(PlayerDC);
+//	if (PlayerBmp)
+//		DeleteObject(PlayerBmp);
+//}
 
 inline void UpdatePlayerAnimation(Player* p) {
 	if (!p) return;
@@ -143,21 +144,62 @@ inline void DrawPlayer(const Player* p, HDC hdc) {
 		srcY = row * PLAYER_SPRITE_SIZE;
 	else
 		srcY = (row + 4) * PLAYER_SPRITE_SIZE;
-	TransparentBlt(hdc, drawX, drawY, PLAYER_SIZE, PLAYER_SIZE, PlayerDC, srcX, srcY,PLAYER_SPRITE_SIZE, PLAYER_SPRITE_SIZE,RGB(0, 0, 255));
+	D2D1_RECT_F destRect = D2D1::RectF(
+		static_cast<FLOAT>(drawX),
+		static_cast<FLOAT>(drawY),
+		static_cast<FLOAT>(drawX + PLAYER_SIZE),
+		static_cast<FLOAT>(drawY + PLAYER_SIZE)
+	);
+
+	D2D1_RECT_F srcRect = D2D1::RectF(
+		static_cast<FLOAT>(srcX),
+		static_cast<FLOAT>(srcY),
+		static_cast<FLOAT>(srcX + PLAYER_SPRITE_SIZE),
+		static_cast<FLOAT>(srcY + PLAYER_SPRITE_SIZE)
+	);
+
+	g_pRenderTarget->DrawBitmap(
+		PlayerBmp,  // 알파 채널 포함된 플레이어 비트맵
+		destRect,
+		1.0f,
+		D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+		srcRect
+	);
 }
 
 //(25.06.08) - 오시은
 //인벤 캐릭터 그리는 함수
 inline void DrawPlayer(int x, int y, int iven_character_anim, HDC hdc) {
-	if (!hdc) return;
+	if (!g_pRenderTarget) return;  // Check for valid render target instead of HDC
 
-	float half = PLAYER_SIZE * 1.5 / 2;
-	int drawX = x - half;
-	int drawY = y - half;
+	float half = PLAYER_SIZE * 1.5f / 2;
+	float drawX = x - half;
+	float drawY = y - half;
 
 	int row = 0;
 
 	int srcX = (iven_character_anim % PLAYER_SPRITE_FRAMES) * PLAYER_SPRITE_SIZE;
 	int srcY = row * PLAYER_SPRITE_SIZE;
-	TransparentBlt(hdc, drawX, drawY, PLAYER_SIZE * 1.5, PLAYER_SIZE * 1.5, PlayerDC, srcX, srcY, PLAYER_SPRITE_SIZE, PLAYER_SPRITE_SIZE, RGB(0, 0, 255));
+
+	D2D1_RECT_F destRect = D2D1::RectF(
+		drawX,
+		drawY,
+		drawX + PLAYER_SIZE * 1.5f,
+		drawY + PLAYER_SIZE * 1.5f
+	);
+
+	D2D1_RECT_F srcRect = D2D1::RectF(
+		static_cast<FLOAT>(srcX),
+		static_cast<FLOAT>(srcY),
+		static_cast<FLOAT>(srcX + PLAYER_SPRITE_SIZE),
+		static_cast<FLOAT>(srcY + PLAYER_SPRITE_SIZE)
+	);
+
+	g_pRenderTarget->DrawBitmap(
+		PlayerBmp,
+		destRect,
+		1.0f,
+		D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+		srcRect
+	);
 }
