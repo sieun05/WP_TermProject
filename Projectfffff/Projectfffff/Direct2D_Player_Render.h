@@ -43,6 +43,7 @@ ID2D1Bitmap* InvenNormalnum = nullptr;
 ID2D1Bitmap* SelecInven_Ex = nullptr;
 ID2D1Bitmap* SelecInven_Nor = nullptr;
 
+ID2D1Bitmap* bossBmp = nullptr;
 
 //알파블랜딩
 ID2D1RadialGradientBrush* pRadialBrush = nullptr;
