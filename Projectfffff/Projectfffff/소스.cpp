@@ -690,6 +690,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\인벤\\인벤 선택 테두리.png", &SelecInven_Ex);
 		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\인벤\\인벤 선택 테두리.png", &SelecInven_Nor);
 
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\몬스터\\보스.png", &bossBmp);
 
 		//2506104
 		std::memcpy(game_map_init, game_map, sizeof(game_map));

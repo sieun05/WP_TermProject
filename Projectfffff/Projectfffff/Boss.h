@@ -1,10 +1,12 @@
 #pragma once
+#include "Direct2D_Player_Render.h"
 
 //(25.06.09) - 김정현
 //보스를 만들어보자...
 
-HBITMAP bossBmp = nullptr;
-HDC bossDC = nullptr;
+// GDI 변수를 Direct2D로 변경
+extern ID2D1HwndRenderTarget* g_pRenderTarget;
+//extern ID2D1Bitmap* bossBmp;
 
 const int BOSS_SPR_WD = 400;
 const int BOSS_SPR_HD = 400;
@@ -52,32 +54,13 @@ struct Boss {
     int maxFrame;
     DWORD lastAnimUpdate;
     DWORD prepareStartTime;
-
-
-    //2506103
     int x;
     int y;
     bool hitFlag = false;
     DWORD hitTime = 0;
 };
-//
-//void InitBossSprite() { //-- 수정필요
-//    bossBmp = (HBITMAP)LoadImage(NULL, L"비트맵\\몬스터\\보스.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-//    bossDC = CreateCompatibleDC(NULL);
-//    SelectObject(bossDC, bossBmp);
-//}
-//
-//void CleanupBossSprite() {
-//    if (bossDC) {
-//        DeleteDC(bossDC);
-//    }
-//    if (bossBmp) {
-//        DeleteObject(bossBmp);
-//    }
-//}
 
-//2506103
-void DrawBossMonster(HDC mdc, const Boss& boss, int bx, int by, const Effect& attackEffect) { //--수정필요
+void DrawBossMonster(HDC mdc, const Boss& boss, int bx, int by, const Effect& attackEffect) {
     int row = 0;
     int frame = boss.animFrame;
 
@@ -106,38 +89,119 @@ void DrawBossMonster(HDC mdc, const Boss& boss, int bx, int by, const Effect& at
 
     int sx = frame * BOSS_SPR_WD;
     int sy = row * BOSS_SPR_HD;
+    
     if (!boss.hitFlag) {
-        if (bossBmp && bossDC) {
+        if (bossBmp && g_pRenderTarget) {
             int drawX = boss.x - bx - BOSS_SIZE / 2;
             int drawY = boss.y - by - BOSS_SIZE / 2;
 
-            TransparentBlt(mdc, drawX, drawY, BOSS_SIZE, BOSS_SIZE, bossDC, sx, sy, BOSS_SPR_WD, BOSS_SPR_HD, RGB(0, 0, 255));
+            D2D1_RECT_F destRect = D2D1::RectF(
+                static_cast<FLOAT>(drawX),
+                static_cast<FLOAT>(drawY),
+                static_cast<FLOAT>(drawX + BOSS_SIZE),
+                static_cast<FLOAT>(drawY + BOSS_SIZE)
+            );
+
+            D2D1_RECT_F srcRect = D2D1::RectF(
+                static_cast<FLOAT>(sx),
+                static_cast<FLOAT>(sy),
+                static_cast<FLOAT>(sx + BOSS_SPR_WD),
+                static_cast<FLOAT>(sy + BOSS_SPR_HD)
+            );
+
+            g_pRenderTarget->DrawBitmap(
+                bossBmp,
+                destRect,
+                1.0f,
+                D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+                srcRect
+            );
         }
 
-        if (attackEffect.active && bossBmp && bossDC) {
+        if (attackEffect.active && bossBmp && g_pRenderTarget) {
             int effectSx = attackEffect.animFrame * EFFECT_SPR_WD;
             int effectSy = attackEffect.spriteRow * EFFECT_SPR_HD;
             int effectX = boss.x - bx - BOSS_SIZE / 2;
             int effectY = boss.y - by - BOSS_SIZE / 2;
 
-            TransparentBlt(mdc, effectX, effectY, BOSS_SIZE, BOSS_SIZE, bossDC, effectSx + 2000, effectSy, EFFECT_SPR_WD, EFFECT_SPR_HD, RGB(0, 0, 255));
+            D2D1_RECT_F destRect = D2D1::RectF(
+                static_cast<FLOAT>(effectX),
+                static_cast<FLOAT>(effectY),
+                static_cast<FLOAT>(effectX + BOSS_SIZE),
+                static_cast<FLOAT>(effectY + BOSS_SIZE)
+            );
+
+            D2D1_RECT_F srcRect = D2D1::RectF(
+                static_cast<FLOAT>(effectSx + 2000),
+                static_cast<FLOAT>(effectSy),
+                static_cast<FLOAT>(effectSx + 2000 + EFFECT_SPR_WD),
+                static_cast<FLOAT>(effectSy + EFFECT_SPR_HD)
+            );
+
+            g_pRenderTarget->DrawBitmap(
+                bossBmp,
+                destRect,
+                1.0f,
+                D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+                srcRect
+            );
         }
     }
     else {
-        if (bossBmp && bossDC) {
+        if (bossBmp && g_pRenderTarget) {
             int drawX = boss.x - bx - BOSS_SIZE / 2;
             int drawY = boss.y - by - BOSS_SIZE / 2;
 
-            TransparentBlt(mdc, drawX, drawY, BOSS_SIZE, BOSS_SIZE, bossDC, sx, sy + 2000, BOSS_SPR_WD, BOSS_SPR_HD, RGB(0, 0, 255));
+            D2D1_RECT_F destRect = D2D1::RectF(
+                static_cast<FLOAT>(drawX),
+                static_cast<FLOAT>(drawY),
+                static_cast<FLOAT>(drawX + BOSS_SIZE),
+                static_cast<FLOAT>(drawY + BOSS_SIZE)
+            );
+
+            D2D1_RECT_F srcRect = D2D1::RectF(
+                static_cast<FLOAT>(sx),
+                static_cast<FLOAT>(sy + 2000),
+                static_cast<FLOAT>(sx + BOSS_SPR_WD),
+                static_cast<FLOAT>(sy + BOSS_SPR_HD + 2000)
+            );
+
+            g_pRenderTarget->DrawBitmap(
+                bossBmp,
+                destRect,
+                1.0f,
+                D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+                srcRect
+            );
         }
 
-        if (attackEffect.active && bossBmp && bossDC) {
+        if (attackEffect.active && bossBmp && g_pRenderTarget) {
             int effectSx = attackEffect.animFrame * EFFECT_SPR_WD;
             int effectSy = attackEffect.spriteRow * EFFECT_SPR_HD;
             int effectX = boss.x - bx - BOSS_SIZE / 2;
             int effectY = boss.y - by - BOSS_SIZE / 2;
 
-            TransparentBlt(mdc, effectX, effectY, BOSS_SIZE, BOSS_SIZE, bossDC, effectSx + 2000, effectSy, EFFECT_SPR_WD, EFFECT_SPR_HD, RGB(0, 0, 255));
+            D2D1_RECT_F destRect = D2D1::RectF(
+                static_cast<FLOAT>(effectX),
+                static_cast<FLOAT>(effectY),
+                static_cast<FLOAT>(effectX + BOSS_SIZE),
+                static_cast<FLOAT>(effectY + BOSS_SIZE)
+            );
+
+            D2D1_RECT_F srcRect = D2D1::RectF(
+                static_cast<FLOAT>(effectSx + 2000),
+                static_cast<FLOAT>(effectSy),
+                static_cast<FLOAT>(effectSx + 2000 + EFFECT_SPR_WD),
+                static_cast<FLOAT>(effectSy + EFFECT_SPR_HD)
+            );
+
+            g_pRenderTarget->DrawBitmap(
+                bossBmp,
+                destRect,
+                1.0f,
+                D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+                srcRect
+            );
         }
     }
 }
