@@ -232,15 +232,11 @@ vector<WorldItem> worldItems;
 bool AddItemToInventory(int itemID, int count) {
 	for (int row = 0; row < 3; ++row) {
 		for (int col = 0; col < 10; ++col) {
-			if (inventory[row][col].itemID == itemID && inventory[row][col].itemcnt < 10) {
+			if (inventory[row][col].itemID == itemID && inventory[row][col].itemcnt + count <= 10) {
 				inventory[row][col].itemcnt += count;
 				return true;
 			}
-		}
-	}
-	for (int row = 0; row < 3; ++row) {
-		for (int col = 0; col < 10; ++col) {
-			if (inventory[row][col].itemID == 0) {
+			else if(inventory[row][col].itemID == 0) {
 				inventory[row][col].itemID = itemID;
 				inventory[row][col].itemcnt = count;
 				return true;
@@ -267,6 +263,20 @@ void DrawCookItems(HDC mdc, HDC itemDC, HDC memdc) {
 		int drawY = firstSlot.top;
 		TransparentBlt(mdc, drawX, drawY, ITEM_SIZE, ITEM_SIZE, itemDC, sx, sy, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
 		TransparentBlt(mdc, drawX, drawY, ITEM_SIZE, ITEM_SIZE, memdc, sxNum, syNum, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
+
+		
+
+		/*if (cookitem[0].itemcnt > 1) {
+			int cnt = cookitem[0].itemcnt;
+			if (cnt < 1) cnt = 1;
+			if (cnt > 10) cnt = 10;
+
+			int sx, sy;
+			GetNumberTileCoords(cnt, sx, sy);
+
+			SelectObject(memdc, Numbmp);
+			TransparentBlt(mdc, drawX + 3, drawY + 3, ITEM_SIZE, ITEM_SIZE, memdc, sx, sy, ITEM_SIZE, ITEM_SIZE, RGB(0, 0, 255));
+		}*/
 	}
 
 	// 두 번째 칸 그리기
@@ -690,8 +700,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
 		//25.06.10 - 김정현
 		//요리칸 좌표 저장
-		firstSlot = { centerx - 760 / 2 + 294, 302 - 90, centerx - 760 / 2 + 294 + 58, 302 + 58 };
-		secondSlot = { centerx - 760 / 2 + 294, 302 + 63 - 90, centerx - 760 / 2 + 294 + 58, 302 + 63 + 58 };
+		firstSlot = { centerx - 760 / 2 + 294, 302 - 90, centerx - 760 / 2 + 294 + 58, 302 -90 + 58 };
+		secondSlot = { centerx - 760 / 2 + 294, 302 + 63 - 90, centerx - 760 / 2 + 294 + 58, 302 + 63 - 90 + 58 };
 		thirdSlot = { centerx - 760 / 2 + 294 + 58 + 60, 302 + 33 - 90, centerx - 760 / 2 + 294 + 58 + 60 + 58, 302 + 33 + 58 };
 		break;
 	case WM_TIMER:
@@ -1792,31 +1802,56 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		}
 
 		////요리칸 드래그
-		//if (drag&& show_cook) {
-		//	if (PtInRect(&firstSlot, { mouseX, mouseY }) && cookitem[0].itemID == 0) {
-		//		cookitem[0] = drag_item;
-		//	}
-		//	else if (PtInRect(&secondSlot, { mouseX, mouseY }) && cookitem[1].itemID == 0) {
-		//		cookitem[1] = drag_item;
-		//	}
-		//	else {
-		//		AddItemToInventory(drag_item.itemID, drag_item.itemcnt);
-		//	}
+		if (drag && show_cook) {
+			if (PtInRect(&firstSlot, { mouseX, mouseY }) && cookitem[0].itemID == 0) {
+				cookitem[0] = drag_item;
+				drag = false;
+				dragX = -1;
+				dragY = -1;
+			}
+			else if (PtInRect(&secondSlot, { mouseX, mouseY }) && cookitem[1].itemID == 0) {
+				cookitem[1] = drag_item;
+				drag = false;
+				dragX = -1;
+				dragY = -1;
+			}
+			else {
+				//AddItemToInventory(drag_item.itemID, drag_item.itemcnt);
+			}
+			
 
-		//	if (cookitem[0].itemID != 0 && cookitem[1].itemID != 0) {
-		//		if (CanCombine(cookitem[0], cookitem[1])) {
-		//			cookitem[2] = CombineItems(cookitem[0], cookitem[1]);
-		//			--cookitem[0].itemcnt;
-		//			--cookitem[1].itemcnt;
-		//			if (cookitem[0].itemcnt == 0)
-		//				cookitem[0].itemID = 0;
-		//			if (cookitem[1].itemcnt == 0)
-		//				cookitem[1].itemID = 0;
-		//		}
-		//	}
-		//	drag = false;
-		//	dragX = -1;
-		//	dragY = -1;
+			//요리 제작
+			if (cookitem[0].itemID != 0 && cookitem[1].itemID != 0) {
+				if (CanCombine(cookitem[0], cookitem[1])) {
+					cookitem[2] = CombineItems(cookitem[0], cookitem[1]);
+					--cookitem[0].itemcnt;
+					--cookitem[1].itemcnt;
+					if (cookitem[0].itemcnt == 0)
+						cookitem[0].itemID = 0;
+					if (cookitem[1].itemcnt == 0)
+						cookitem[1].itemID = 0;
+				}
+			}
+			/*bool droppedInInventory = false;
+				for (int row = 0; row < 3; ++row) {
+					for (int col = 0; col < 10; ++col) {
+						int slotX = (centerx - 760 / 2 + 89) + (59 * col);
+						int slotY = (row == 0) ? 395 : (row == 1) ? 465 : 524;
+
+						RECT invSlot = { slotX, slotY, slotX + 51, slotY + 51 };
+
+						if (PtInRect(&invSlot, { mouseX, mouseY }) && inventory[row][col].itemID == 0) {
+							inventory[row][col] = dragCraftingItem;
+							droppedInInventory = true;
+							break;
+						}
+					}
+				}
+				if (!droppedInInventory) {
+			AddItemToInventory(dragCraftingItem.itemID, 1);
+			}*/
+		}
+
 		//}
 		//if (drag && (show_cook /* || show_craft*/)) { //250906
 		//	bool droppedInInventory = false;
@@ -1866,7 +1901,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 					if (playeritem[0].itemID == 0) {
 						playeritem[0] = drag_item;
 						if (not challenge[2]) challenge[2] = 1;
-						
+
 						if (playeritem[3].itemID == 23 && p.hp < p.maxHp) {
 							p.hp = min(p.hp + 5, p.maxHp);
 						}
@@ -1882,7 +1917,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 					if (playeritem[1].itemID == 0) {
 						playeritem[1] = drag_item;
 						if (not challenge[2]) challenge[2] = 1;
-						
+
 						if (playeritem[3].itemID == 23 && p.hp < p.maxHp) {
 							p.hp = min(p.hp + 5, p.maxHp);
 						}
@@ -1898,7 +1933,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 					if (playeritem[2].itemID == 0) {
 						playeritem[2] = drag_item;
 						if (not challenge[2]) challenge[2] = 1;
-						
+
 						if (playeritem[3].itemID == 23 && p.hp < p.maxHp) {
 							p.hp = min(p.hp + 5, p.maxHp);
 						}
@@ -1914,7 +1949,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 					if (playeritem[3].itemID == 0) {
 						playeritem[3] = drag_item;
 						if (not challenge[2]) challenge[2] = 1;
-						
+
 						if (playeritem[3].itemID == 23 && p.hp < p.maxHp) {
 							p.hp = min(p.hp + 5, p.maxHp);
 						}
@@ -1973,6 +2008,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			InvalidateRect(hWnd, NULL, FALSE);
 			break;
 
+
 			bool dropped = false;
 			int n = 0;
 			for (int row = 0; row < 3; ++row) {
@@ -1997,6 +2033,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 					break;
 			}
 			if (!dropped) {
+				//AddItemToInventory(drag_item.itemID, drag_item.itemcnt);
 				inventory[dragY][dragX] = drag_item;
 			}
 
