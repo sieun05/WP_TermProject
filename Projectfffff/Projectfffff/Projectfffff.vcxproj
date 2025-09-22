@@ -133,6 +133,7 @@
     <ClInclude Include="Cell.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="Cook.h" />
+    <ClInclude Include="Direct2D_Player_Render.h" />
     <ClInclude Include="Direction.h" />
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="Item.h" />
