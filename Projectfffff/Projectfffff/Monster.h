@@ -1,6 +1,7 @@
 #pragma once
 #include "Cell.h"
 #include "Path.h"
+#include "Direct2D_Player_Render.h"
 
 //(25.06.07) - 김정현
 //몬스터 이동 로직 수정
@@ -17,7 +18,7 @@ typedef enum {
 
 struct Monster {
     Monster() = default;
-    Monster(int x, int y, int hp, int speed, HBITMAP bmp, MonsterType type)
+    Monster(int x, int y, int hp, int speed, ID2D1Bitmap* bmp, MonsterType type)
         :x{ x }, y{ y }, hp{ hp }, speed{ speed }, bmp{ bmp }, type{ type }, dir{ 0 }, anim{ 0 }, animTimer{ 0 } {
     };
 
@@ -25,7 +26,7 @@ struct Monster {
     int y;
     int hp;
     int speed;
-    HBITMAP bmp;
+    ID2D1Bitmap* bmp;
     MonsterType type;
 
     int dir;
@@ -100,7 +101,7 @@ static int CanMove_Monster(int x, int y) {
 }
 
 
-inline bool InitMonster(Monster* m, MonsterType type){
+inline bool InitMonster(Monster* m, MonsterType type) {
     if (!m) return false;
 
     m->type = type;
@@ -109,25 +110,24 @@ inline bool InitMonster(Monster* m, MonsterType type){
     case Monster_1:
         m->speed = 2;
         m->hp = 50;
-
-        m->bmp = (HBITMAP)LoadImage(nullptr,L"비트맵\\몬스터\\1.bmp",IMAGE_BITMAP,0, 0,LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+        m->bmp = mon1;  // Using the global Direct2D bitmap
         break;
 
     case Monster_2:
         m->speed = 2;
         m->hp = 50;
-        m->bmp = (HBITMAP)LoadImage(nullptr,L"비트맵\\몬스터\\2.bmp",IMAGE_BITMAP,0, 0,LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+        m->bmp = mon2;  // Using the global Direct2D bitmap
         break;
     default:
         m->speed = 1;
         m->hp = 1;
-        m->bmp = NULL;
+        m->bmp = nullptr;
         break;
     }
 
     m->roamDir = ran(dre);
     m->roamSteps = 50 + ran(dre) * 20;
-    return (m->bmp != NULL);
+    return (m->bmp != nullptr);
 }
 
 inline bool UpdateMonster(Monster* m, int dx, int dy)
@@ -218,36 +218,28 @@ inline bool UpdateMonster(Monster* m, int dx, int dy)
     return didMove;
 }
 
-void DrawMonster(const Monster* m, HDC hdc) {
-    if (!m || !hdc) return;
+void DrawMonster(const Monster* m, ID2D1HwndRenderTarget* renderTarget) {
+    if (!m || !renderTarget || !m->bmp) return;
 
     DWORD now = GetTickCount64();
     bool stillHit = m->hitFlag && (now - m->hitTime < 500);
 
     int halfSize = MONSTER_SIZE / 2;
-    int drawX = m->x - bx - halfSize;
-    int drawY = m->y - by - halfSize;
+    float drawX = static_cast<float>(m->x - bx - halfSize);
+    float drawY = static_cast<float>(m->y - by - halfSize);
 
     if (stillHit == false && m->hitFlag)
         const_cast<Monster*>(m)->hitFlag = false;
 
-    if (m->bmp) {
-        HDC memDC = CreateCompatibleDC(hdc);
-        SelectObject(memDC, m->bmp);
-        int monX;
-        int monY;
-        if (stillHit) {
-            monX = (m->anim % 4) * 70;
-            monY = (m->dir % 8 + 8) * 70;
-        }
-        else {
-            monX = (m->anim % 4) * 70;
-            monY = (m->dir % 8) * 70;
-        }
-     
-        TransparentBlt(hdc, drawX, drawY, MONSTER_SIZE, MONSTER_SIZE, memDC, monX, monY, 70, 70, RGB(0, 0, 255));
-        DeleteDC(memDC);
-    }
+    D2D1_RECT_F destRect = D2D1::RectF(drawX, drawY, drawX + MONSTER_SIZE, drawY + MONSTER_SIZE);
+    D2D1_RECT_F srcRect = D2D1::RectF(
+        static_cast<float>((m->anim % 4) * 70),
+        static_cast<float>((stillHit ? m->dir % 8 + 8 : m->dir % 8) * 70),
+        static_cast<float>((m->anim % 4) * 70 + 70),
+        static_cast<float>((stillHit ? m->dir % 8 + 8 : m->dir % 8) * 70 + 70)
+    );
+
+    renderTarget->DrawBitmap(m->bmp, destRect, 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, srcRect);
 }
 
 void Monster::computePath(const Point& playerCell) {

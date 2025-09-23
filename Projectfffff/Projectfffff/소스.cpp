@@ -689,6 +689,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
 		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\몬스터\\보스.png", &bossBmp);
 
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\몬스터\\1.png", &mon1);
+		LoadD2DBitmapFromFile(g_pRenderTarget, g_pWICFactory, L"비트맵\\몬스터\\2.png", &mon2);
+		
 		//2506104
 		std::memcpy(game_map_init, game_map, sizeof(game_map));
 
@@ -2494,10 +2497,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			//(25.06.07) - 김정현
 			//몬스터 그리기 (벽 뒤에있는 몬스터는 벽에 가려지게 위치 옮김)
 			for (int i = 0; i < monster1_cnt; ++i) {
-				DrawMonster(&monster1[i], mdc);// ----------이 함수 수정필요
+				DrawMonster(&monster1[i], g_pRenderTarget);// ----------이 함수 수정필요
 			}
 			for (int i = 0; i < monster2_cnt; ++i) {
-				DrawMonster(&monster2[i], mdc);
+				DrawMonster(&monster2[i], g_pRenderTarget);
 			}
 
 			//(25.06.07) - 김정현
