@@ -295,9 +295,12 @@ static RECT thirdSlot;
 
 void DrawCookItems() {
 	// 첫 번째 칸 그리기
-	if (cookitem[0].itemID != 0) {
+	if (cookitem[0].itemcnt != 0) {
 		int sx, sy;
 		GetItemTileCoords(cookitem[0].itemID, sx, sy);
+		int sxNum, syNum;
+		GetNumberTileCoords(cookitem[0].itemcnt, sxNum, syNum);
+
 		int drawX = firstSlot.left;
 		int drawY = firstSlot.top;
 		D2D1_RECT_F destRect = D2D1::RectF(
@@ -321,12 +324,37 @@ void DrawCookItems() {
 			D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
 			srcRect
 		);
+
+		destRect = D2D1::RectF(
+			static_cast<FLOAT>(drawX),
+			static_cast<FLOAT>(drawY),
+			static_cast<FLOAT>(drawX + ITEM_SIZE),
+			static_cast<FLOAT>(drawY + ITEM_SIZE)
+		);
+
+		srcRect = D2D1::RectF(
+			static_cast<FLOAT>(sxNum),
+			static_cast<FLOAT>(syNum),
+			static_cast<FLOAT>(sxNum + ITEM_SIZE),
+			static_cast<FLOAT>(syNum + ITEM_SIZE)
+		);
+
+		g_pRenderTarget->DrawBitmap(
+			Numbmp,  // 알파 채널 포함된 숫자/아이콘 비트맵
+			destRect,
+			1.0f,
+			D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+			srcRect
+		);
 	}
 
 	// 두 번째 칸 그리기
-	if (cookitem[1].itemID != 0) {
+	if (cookitem[1].itemcnt != 0) {
 		int sx, sy;
 		GetItemTileCoords(cookitem[1].itemID, sx, sy);
+		int sxNum, syNum;
+		GetNumberTileCoords(cookitem[1].itemcnt, sxNum, syNum);
+
 		int drawX = secondSlot.left;
 		int drawY = secondSlot.top;
 		D2D1_RECT_F destRect = D2D1::RectF(
@@ -351,6 +379,27 @@ void DrawCookItems() {
 			srcRect
 		);
 
+		destRect = D2D1::RectF(
+			static_cast<FLOAT>(drawX),
+			static_cast<FLOAT>(drawY),
+			static_cast<FLOAT>(drawX + ITEM_SIZE),
+			static_cast<FLOAT>(drawY + ITEM_SIZE)
+		);
+
+		srcRect = D2D1::RectF(
+			static_cast<FLOAT>(sxNum),
+			static_cast<FLOAT>(syNum),
+			static_cast<FLOAT>(sxNum + ITEM_SIZE),
+			static_cast<FLOAT>(syNum + ITEM_SIZE)
+		);
+
+		g_pRenderTarget->DrawBitmap(
+			Numbmp,  // 알파 채널 포함된 숫자/아이콘 비트맵
+			destRect,
+			1.0f,
+			D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+			srcRect
+		);
 	}
 
 	// 세 번째 칸 그리기 (결과물 칸)
@@ -1023,24 +1072,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 				//2506104
 				game_end_flag = false;
 
-				inventory[0][0].itemID = 2;
-				inventory[0][0].itemcnt = 1;
-				inventory[0][1].itemID = 14;
-				inventory[0][1].itemcnt = 1;
-				inventory[0][2].itemID = 1;
-				inventory[0][2].itemcnt = 1;
-				inventory[0][3].itemID = 3;
-				inventory[0][3].itemcnt = 1;
-				inventory[0][4].itemID = 4;
-				inventory[0][4].itemcnt = 1;
-				inventory[0][5].itemID = 13;
-				inventory[0][5].itemcnt = 10;
-				inventory[0][6].itemID = 91;
-				inventory[0][6].itemcnt = 1;
-				inventory[0][7].itemID = 64;
-				inventory[0][7].itemcnt = 10;
-				inventory[0][8].itemID = 63;
-				inventory[0][8].itemcnt = 10;
+				//inventory[0][0].itemID = 2;
+				//inventory[0][0].itemcnt = 1;
+				//inventory[0][1].itemID = 14;
+				//inventory[0][1].itemcnt = 1;
+				//inventory[0][2].itemID = 1;
+				//inventory[0][2].itemcnt = 1;
+				//inventory[0][3].itemID = 3;
+				//inventory[0][3].itemcnt = 1;
+				//inventory[0][4].itemID = 4;
+				//inventory[0][4].itemcnt = 1;
+				//inventory[0][5].itemID = 13;
+				//inventory[0][5].itemcnt = 10;
+				//inventory[0][6].itemID = 91;
+				//inventory[0][6].itemcnt = 1;
+				//inventory[0][7].itemID = 64;
+				//inventory[0][7].itemcnt = 10;
+				//inventory[0][8].itemID = 63;
+				//inventory[0][8].itemcnt = 10;
 
 				screen = 1;
 			}
@@ -2220,6 +2269,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 	case WM_KEYDOWN: {
 
 		switch (wParam) {
+		case 'b':
+		case 'B':
+			if (screen == 1 && not game_end_flag) {
+				inventory[2][0].itemID = 2;
+				inventory[2][0].itemcnt = 1;
+				inventory[2][1].itemID = 3;
+				inventory[2][1].itemcnt = 1;
+				inventory[2][2].itemID = 13;
+				inventory[2][2].itemcnt = 10;
+				inventory[2][3].itemID = 14;
+				inventory[2][3].itemcnt = 1;
+			}
+			break;
 		case VK_TAB: {
 			if (!show_cook && !show_craft) {
 				show_inventory = !show_inventory;
