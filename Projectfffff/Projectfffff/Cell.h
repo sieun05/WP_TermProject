@@ -94,14 +94,14 @@ void DrawWallTile(HDC& hdc, int screenX, int screenY, int mapX, int mapY, int wa
 			srcX = 1, srcY = 4;
 			sx = 40 * srcX, sy = 40 * srcY;
 			srcRect = D2D1::RectF(sx, sy, sx + 40, sy + 40);
-			g_pRenderTarget->DrawBitmap(ground[0], destRect, 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR, srcRect);
+			g_pRenderTarget->DrawBitmap(g_WallBitmap, destRect, 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR, srcRect);
 		}
 		else if (mapY + 1 < MAP_HEIGHT && 
 			game_map[mapY + 1][mapX].type == 11) {
 			srcX = 0, srcY = 4;
 			sx = 40 * srcX, sy = 40 * srcY;
 			srcRect = D2D1::RectF(sx, sy, sx + 40, sy + 40);
-			g_pRenderTarget->DrawBitmap(ground[0], destRect, 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR, srcRect);
+			g_pRenderTarget->DrawBitmap(g_WallBitmap, destRect, 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR, srcRect);
 		}
 	}
 	else {
