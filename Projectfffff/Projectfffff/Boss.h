@@ -223,7 +223,7 @@ void CheckBossAttackHit(Boss& boss, Player& p, int bx, int by, DWORD now) {
     if (boss.state == BOSS_ATTACK_1) {
         RECT attackRect = {
             bossX - 200,
-            bossY,
+            bossY + 200,
             bossX + 200,
             bossY + 270
         };
@@ -245,7 +245,7 @@ void CheckBossAttackHit(Boss& boss, Player& p, int bx, int by, DWORD now) {
         if (boss.animFrame == 3 && !p.isHurt) { // 3프레임에 판정
             RECT attackRect = {
                 bossX - 200,
-                bossY,
+                bossY + 150,
                 bossX + 100,
                 bossY + 300
             };
@@ -267,7 +267,7 @@ void CheckBossAttackHit(Boss& boss, Player& p, int bx, int by, DWORD now) {
         if (boss.animFrame == 3 && !p.isHurt) {
             RECT attackRect = {
                 bossX - 100,
-                bossY,
+                bossY + 150,
                 bossX + 200,
                 bossY + 300
             };
