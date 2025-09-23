@@ -82,6 +82,7 @@ static int dragX = -1;
 static int dragY = -1;
 static int dragMouseX = 0;
 static int dragMouseY = 0;
+bool cook_drag = false;
 
 //(25.06.05) - 김정현
 // 몬스터 관련 변수
@@ -1808,19 +1809,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		//요리칸에서 드래그 시작
 		if (show_cook) {
 			if (PtInRect(&firstSlot, { mouseX, mouseY }) && cookitem[0].itemID != 0) {
+				cook_drag = true;
 				drag = true;
 				drag_item = cookitem[0];
 				cookitem[0].itemID = 0;
 				cookitem[0].itemcnt = 0;
+				dragMouseX = mouseX;
+				dragMouseY = mouseY;
 			}
 			else if (PtInRect(&secondSlot, { mouseX, mouseY }) && cookitem[1].itemID != 0) {
 				drag = true;
+				cook_drag = true;
 				drag_item = cookitem[1];
 				cookitem[1].itemID = 0;
 				cookitem[1].itemcnt = 0;
+				dragMouseX = mouseX;
+				dragMouseY = mouseY;
 			}
 			else if (PtInRect(&thirdSlot, { mouseX, mouseY }) && cookitem[2].itemID != 0) {
 				drag = true;
+				cook_drag = true;
 				drag_item = cookitem[2];
 				cookitem[2].itemID = 0;
 				cookitem[2].itemcnt = 0;
@@ -1967,7 +1975,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 				dragY = -1;
 			}
 			else {
-				//AddItemToInventory(drag_item.itemID, drag_item.itemcnt);
+				if (cook_drag) {
+					AddItemToInventory(drag_item.itemID, drag_item.itemcnt);
+					cook_drag = false;
+					drag = false;
+					dragX = -1;
+					dragY = -1;
+				}
 			}
 			
 
