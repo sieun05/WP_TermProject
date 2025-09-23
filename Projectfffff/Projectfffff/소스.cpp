@@ -1023,24 +1023,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 				//2506104
 				game_end_flag = false;
 
-				inventory[0][0].itemID = 2;
-				inventory[0][0].itemcnt = 1;
-				inventory[0][1].itemID = 14;
-				inventory[0][1].itemcnt = 1;
-				inventory[0][2].itemID = 1;
-				inventory[0][2].itemcnt = 1;
-				inventory[0][3].itemID = 3;
-				inventory[0][3].itemcnt = 1;
-				inventory[0][4].itemID = 4;
-				inventory[0][4].itemcnt = 1;
-				inventory[0][5].itemID = 13;
-				inventory[0][5].itemcnt = 10;
-				inventory[0][6].itemID = 91;
-				inventory[0][6].itemcnt = 1;
-				inventory[0][7].itemID = 64;
-				inventory[0][7].itemcnt = 10;
-				inventory[0][8].itemID = 63;
-				inventory[0][8].itemcnt = 10;
+				//inventory[0][0].itemID = 2;
+				//inventory[0][0].itemcnt = 1;
+				//inventory[0][1].itemID = 14;
+				//inventory[0][1].itemcnt = 1;
+				//inventory[0][2].itemID = 1;
+				//inventory[0][2].itemcnt = 1;
+				//inventory[0][3].itemID = 3;
+				//inventory[0][3].itemcnt = 1;
+				//inventory[0][4].itemID = 4;
+				//inventory[0][4].itemcnt = 1;
+				//inventory[0][5].itemID = 13;
+				//inventory[0][5].itemcnt = 10;
+				//inventory[0][6].itemID = 91;
+				//inventory[0][6].itemcnt = 1;
+				//inventory[0][7].itemID = 64;
+				//inventory[0][7].itemcnt = 10;
+				//inventory[0][8].itemID = 63;
+				//inventory[0][8].itemcnt = 10;
 
 				screen = 1;
 			}
@@ -2220,6 +2220,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 	case WM_KEYDOWN: {
 
 		switch (wParam) {
+		case 'b':
+		case 'B':
+			if (screen == 1 && not game_end_flag) {
+				inventory[2][0].itemID = 2;
+				inventory[2][0].itemcnt = 1;
+				inventory[2][1].itemID = 3;
+				inventory[2][1].itemcnt = 1;
+				inventory[2][2].itemID = 13;
+				inventory[2][2].itemcnt = 10;
+				inventory[2][3].itemID = 14;
+				inventory[2][3].itemcnt = 1;
+			}
+			break;
 		case VK_TAB: {
 			if (!show_cook && !show_craft) {
 				show_inventory = !show_inventory;
