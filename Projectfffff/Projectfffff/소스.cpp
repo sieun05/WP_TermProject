@@ -2063,7 +2063,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 				RECT ring = { invX + 458, invY + 240,  invX + 458 + 52, invY + 240 + 52 };
 
 				if (PtInRect(&head, { mouseX,mouseY })) {
-					if (playeritem[0].itemID == 0) {
+					if (playeritem[0].itemID == 0 && (drag_item.itemID == 21 || drag_item.itemID == 22)) {
 						playeritem[0] = drag_item;
 						if (not challenge[2]) challenge[2] = 1;
 
@@ -2079,7 +2079,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 					break;
 				}
 				if (PtInRect(&body, { mouseX,mouseY })) {
-					if (playeritem[1].itemID == 0) {
+					if (playeritem[1].itemID == 0 && (drag_item.itemID == 31 || drag_item.itemID == 32)) {
 						playeritem[1] = drag_item;
 						if (not challenge[2]) challenge[2] = 1;
 
@@ -2095,7 +2095,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 					break;
 				}
 				if (PtInRect(&boots, { mouseX,mouseY })) {
-					if (playeritem[2].itemID == 0) {
+					if (playeritem[2].itemID == 0 && (drag_item.itemID == 41 || drag_item.itemID == 42)) {
 						playeritem[2] = drag_item;
 						if (not challenge[2]) challenge[2] = 1;
 
@@ -2111,7 +2111,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 					break;
 				}
 				if (PtInRect(&ring, { mouseX,mouseY })) {
-					if (playeritem[3].itemID == 0) {
+					if (playeritem[3].itemID == 0 && (drag_item.itemID == 23 || drag_item.itemID == 24)) {
 						playeritem[3] = drag_item;
 						if (not challenge[2]) challenge[2] = 1;
 
@@ -2149,30 +2149,35 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 				InvalidateRect(hWnd, NULL, FALSE);
 				break;
 			}
-			bool placed = false;
-			for (int row = 0; row < 3 && !placed; ++row) {
-				int rowY = (row == 0 ? 395 : (row == 1 ? 465 : 524));
-				if (mouseY < rowY || mouseY >= rowY + 51) continue;
-				for (int col = 0; col < 10; ++col) {
-					int slotX = centerx - 760 / 2 + 89 + 59 * col;
-					if (mouseX >= slotX && mouseX < slotX + 51 && inventory[row][col].itemID == 0) {
-						inventory[row][col] = drag_item;
-						placed = true;
-						break;
+			else {
+				/*bool placed = false;
+				for (int row = 0; row < 3 && !placed; ++row) {
+					int rowY = (row == 0 ? 395 : (row == 1 ? 465 : 524));
+					if (mouseY < rowY || mouseY >= rowY + 51) continue;
+					for (int col = 0; col < 10; ++col) {
+						int slotX = centerx - 760 / 2 + 89 + 59 * col;
+						if (mouseX >= slotX && mouseX < slotX + 51 && inventory[row][col].itemID == 0) {
+							inventory[row][col] = drag_item;
+							placed = true;
+							break;
+						}
 					}
 				}
+				if (!placed) {
+					int id = drag_item.itemID;
+					int slot = (id == 13 || id == 14) ? 3 : ((id / 10) - 2);
+					if (slot >= 0 && slot < 4) {
+						playeritem[slot] = drag_item;
+					}
+				}*/
+				AddItemToInventory(drag_item.itemID, drag_item.itemcnt);
+				drag = false;
+				dragX = -1;
+				dragY = -1;
+				drag = dragFromEquip = false;
+				InvalidateRect(hWnd, NULL, FALSE);
+				break;
 			}
-			if (!placed) {
-				int id = drag_item.itemID;
-				int slot = (id == 13 || id == 14) ? 3 : ((id / 10) - 2);
-				if (slot >= 0 && slot < 4) {
-					playeritem[slot] = drag_item;
-				}
-			}
-			drag = dragFromEquip = false;
-			InvalidateRect(hWnd, NULL, FALSE);
-			break;
-
 
 			bool dropped = false;
 			int n = 0;
