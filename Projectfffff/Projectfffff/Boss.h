@@ -223,13 +223,13 @@ void CheckBossAttackHit(Boss& boss, Player& p, int bx, int by, DWORD now) {
     if (boss.state == BOSS_ATTACK_1) {
         RECT attackRect = {
             bossX - 200,
-            bossY + 200,
+            bossY + 100,
             bossX + 200,
             bossY + 270
         };
 
         if (PtInRect(&attackRect, POINT{ pRect.left, pRect.top }) or
-            PtInRect(&attackRect, POINT{ pRect.left, pRect.right }) or
+            PtInRect(&attackRect, POINT{ pRect.left, pRect.bottom }) or
             PtInRect(&attackRect, POINT{ pRect.right, pRect.top }) or
             PtInRect(&attackRect, POINT{ pRect.right, pRect.bottom })) {
 
@@ -245,13 +245,13 @@ void CheckBossAttackHit(Boss& boss, Player& p, int bx, int by, DWORD now) {
         if (boss.animFrame == 3 && !p.isHurt) { // 3프레임에 판정
             RECT attackRect = {
                 bossX - 200,
-                bossY + 150,
+                bossY - 100,
                 bossX + 100,
                 bossY + 300
             };
 
             if (PtInRect(&attackRect, POINT{ pRect.left, pRect.top }) or
-                PtInRect(&attackRect, POINT{ pRect.left, pRect.right }) or
+                PtInRect(&attackRect, POINT{ pRect.left, pRect.bottom }) or
                 PtInRect(&attackRect, POINT{ pRect.right, pRect.top }) or
                 PtInRect(&attackRect, POINT{ pRect.right, pRect.bottom })) {
 
@@ -267,13 +267,13 @@ void CheckBossAttackHit(Boss& boss, Player& p, int bx, int by, DWORD now) {
         if (boss.animFrame == 3 && !p.isHurt) {
             RECT attackRect = {
                 bossX - 100,
-                bossY + 150,
+                bossY - 100,
                 bossX + 200,
                 bossY + 300
             };
 
             if (PtInRect(&attackRect, POINT{ pRect.left, pRect.top }) or
-                PtInRect(&attackRect, POINT{ pRect.left, pRect.right }) or
+                PtInRect(&attackRect, POINT{ pRect.left, pRect.bottom }) or
                 PtInRect(&attackRect, POINT{ pRect.right, pRect.top }) or
                 PtInRect(&attackRect, POINT{ pRect.right, pRect.bottom })) {
 
